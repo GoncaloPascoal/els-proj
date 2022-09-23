@@ -7,3 +7,4 @@
 # Class files
 **/*.class
 
+.vscode/
