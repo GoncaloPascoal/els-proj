@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Table {
-    private Map<String, List<String>> data;
+    private final Map<String, List<String>> data;
 
     public Table() {
         data = new LinkedHashMap<>();
@@ -23,7 +23,7 @@ public class Table {
 
     public void addRow(Map<String, String> row) {
         addRows(row.entrySet().stream().collect(Collectors.toMap(
-            entry -> entry.getKey(),
+            Map.Entry::getKey,
             entry -> new ArrayList<>(Collections.singletonList(entry.getValue()))
         )));
     }
