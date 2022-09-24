@@ -2,8 +2,8 @@ package pt.up.fe.els2022.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,10 +13,10 @@ public class Table {
     private Map<String, List<String>> data;
 
     public Table() {
-        data = new HashMap<>();
+        data = new LinkedHashMap<>();
     }
 
-    // TODO: perhaps extract this to a utility class?
+    // TODO: Perhaps extract this to a utility class?
     private static int numRows(Map<String, List<String>> data) {
         return data.values().stream().findFirst().map(List::size).orElse(0);
     }
@@ -55,8 +55,12 @@ public class Table {
         return Collections.unmodifiableList(data.get(name));
     }
 
+    public Set<String> getColumnNames() {
+        return data.keySet();
+    }
+
     public Map<String, String> getRow(int index) {
-        Map<String, String> row = new HashMap<>();
+        Map<String, String> row = new LinkedHashMap<>();
         for (Map.Entry<String, List<String>> entry : data.entrySet()) {
             row.put(entry.getKey(), entry.getValue().get(index));
         }
