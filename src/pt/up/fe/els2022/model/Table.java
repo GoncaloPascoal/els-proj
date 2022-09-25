@@ -32,8 +32,9 @@ public class Table {
         Set<String> missingColumns = new HashSet<>(data.keySet());
         missingColumns.removeAll(rows.keySet());
 
+        int numExisting = numRows();
         for (Map.Entry<String, List<String>> entry : rows.entrySet()) {
-            data.putIfAbsent(entry.getKey(), new ArrayList<>(Collections.nCopies(numRows(), null)));
+            data.putIfAbsent(entry.getKey(), new ArrayList<>(Collections.nCopies(numExisting, null)));
             data.get(entry.getKey()).addAll(entry.getValue());
         }
 
