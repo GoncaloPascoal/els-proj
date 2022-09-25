@@ -19,7 +19,7 @@ public final class AdapterFactory {
 
         switch (extension) {
             case "xml":
-                return new XmlAdapter();
+                return new XmlAdapter(file);
         }
 
         throw new UnsupportedFileExtensionException(extension);
