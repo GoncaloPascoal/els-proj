@@ -12,14 +12,15 @@ apply plugin: 'java'
 
 // Repositories providers
 repositories {
-    mavenCentral()
+   mavenCentral()
 }
 
 
 dependencies {
-    testImplementation "junit:junit:4.11" 	
+   testImplementation "junit:junit:4.11" 	
 
-	//! Add your dependencies here    
+	//! Add your dependencies here
+   implementation 'org.yaml:snakeyaml:1.32'
 }
 
 // Add JARs in folder 'libs' as dependencies
