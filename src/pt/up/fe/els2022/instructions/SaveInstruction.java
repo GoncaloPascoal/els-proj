@@ -3,8 +3,10 @@ package pt.up.fe.els2022.instructions;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import pt.up.fe.els2022.model.Table;
@@ -14,16 +16,24 @@ import pt.up.fe.specs.util.csv.CsvWriter;
 public class SaveInstruction implements Instruction {
     private final Table table;
     private final String path;
-    private final List<String> columns;
+    private final Optional<List<String>> columns;
 
-    public SaveInstruction(Table table, String path, List<String> columns) {
+    public SaveInstruction(Table table, String path, Optional<List<String>> columns) {
+        if (columns.isPresent() && columns.get().isEmpty()) {
+            columns = Optional.empty();
+        }
+
         this.table = table;
         this.path = path;
         this.columns = columns;
     }
 
     public void execute() {
-        if (!table.getColumnNames().containsAll(columns)) {
+        System.out.println(table.getColumnNames());
+
+        List<String> saveColumns = columns.orElse(new ArrayList<>(table.getColumnNames()));
+
+        if (!table.getColumnNames().containsAll(saveColumns)) {
             throw new RuntimeException("Save instruction references columns that do not exist.");
         }
 
@@ -32,10 +42,10 @@ public class SaveInstruction implements Instruction {
             throw new RuntimeException("Destination file must be a CSV file.");
         }
 
-        CsvWriter csvWriter = new CsvWriter(columns);
+        CsvWriter csvWriter = new CsvWriter(saveColumns);
         for (int i = 0; i < table.numRows(); i++) {
             Map<String, String> row = table.getRow(i);
-            csvWriter.addLine(columns.stream().map(c -> row.get(c)).collect(Collectors.toList()));
+            csvWriter.addLine(saveColumns.stream().map(c -> row.get(c)).collect(Collectors.toList()));
         }
         String csv = csvWriter.buildCsv();
 
@@ -43,9 +53,9 @@ public class SaveInstruction implements Instruction {
             FileWriter writer = new FileWriter(file);
             writer.write(csv);
             writer.close();
-        } catch (IOException e) {
-            System.err.println("An error occurred when writing the csv file.");
-            e.printStackTrace();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

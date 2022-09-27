@@ -2,6 +2,7 @@ package pt.up.fe.els2022.instructions;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 import pt.up.fe.els2022.adapters.Adapter;
 import pt.up.fe.els2022.adapters.AdapterFactory;
@@ -12,9 +13,13 @@ public class LoadInstruction implements Instruction {
     private final Table table;
     private final List<String> filePaths;
     private final String path;
-    private final List<String> columns;
+    private final Optional<List<String>> columns;
 
-    public LoadInstruction(Table table, List<String> filePaths, String path, List<String> columns) {
+    public LoadInstruction(Table table, List<String> filePaths, String path, Optional<List<String>> columns) {
+        if (columns.isPresent() && columns.get().isEmpty()) {
+            columns = Optional.empty();
+        }
+
         this.table = table;
         this.filePaths = filePaths;
         this.path = path;
@@ -27,9 +32,9 @@ public class LoadInstruction implements Instruction {
         for (String filePath : filePaths) {
             try {
                 adapter = AdapterFactory.createAdapter(filePath);
-            } catch (FileNotFoundException | UnsupportedFileExtensionException e) {
-                System.err.println(e);
-                return;
+            }
+            catch (FileNotFoundException | UnsupportedFileExtensionException e) {
+                throw new RuntimeException(e);
             }
 
             Table newTable = adapter.extractTable(path, columns);

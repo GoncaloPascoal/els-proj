@@ -2,6 +2,7 @@ package pt.up.fe.els2022.instructions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.els2022.utils.CollectionUtils;
@@ -18,20 +19,23 @@ public class InstructionFactory {
                 Object tagObj = args.get("tag");
                 Object columnsObj = args.get("columns");
 
-                if (filesObj == null || tagObj == null || columnsObj == null) {
+                if (filesObj == null || tagObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for load instruction.");
                 }
 
-                if (!(filesObj instanceof List<?> && tagObj instanceof String && columnsObj instanceof List<?>)) {
+                if (!(filesObj instanceof List<?> && tagObj instanceof String &&
+                        (columnsObj == null || columnsObj instanceof List<?>))) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
 
                 try {
                     List<String> files = SpecsCollections.cast((List<?>) filesObj, String.class);
                     String tag = (String) tagObj;
-                    List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
+                    List<String> columns = null;
+                    if (columnsObj != null)
+                        columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
 
-                    return new LoadInstruction(table, files, tag, columns);
+                    return new LoadInstruction(table, files, tag, Optional.ofNullable(columns));
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
@@ -57,19 +61,21 @@ public class InstructionFactory {
                 Object fileObj = args.get("file");
                 Object columnsObj = args.get("columns");
 
-                if (fileObj == null || columnsObj == null) {
+                if (fileObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for save instruction.");
                 }
 
-                if (!(fileObj instanceof String && columnsObj instanceof List<?>)) {
+                if (!(fileObj instanceof String && (columnsObj == null || columnsObj instanceof List<?>))) {
                     throw new IllegalArgumentException("Incorrect argument types for save instruction.");
                 }
 
                 try {
                     String file = (String) fileObj;
-                    List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
+                    List<String> columns = null;
+                    if (columnsObj != null)
+                        columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
 
-                    return new SaveInstruction(table, file, columns);
+                    return new SaveInstruction(table, file, Optional.ofNullable(columns));
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for save instruction.");

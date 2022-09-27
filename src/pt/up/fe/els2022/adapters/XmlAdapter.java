@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.w3c.dom.Node;
@@ -19,18 +20,28 @@ public class XmlAdapter extends Adapter {
     }
 
     @Override
-    public Table extractTable(String key, List<String> columns) {
+    public Table extractTable(String key, Optional<List<String>> columns) {
         Table table = new Table();
         Map<String, String> row = new LinkedHashMap<>();
 
         XmlDocument document = XmlDocument.newInstance(file);
         XmlElement element = document.getElementByName(key);
-        for (XmlNode child : element.getChildren().stream()
-                .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE &&
-                    columns.contains(n.getNode().getNodeName()))
-                .collect(Collectors.toList())) {
-            Node childNode = child.getNode();
-            row.put(childNode.getNodeName(), childNode.getTextContent());
+
+        if (columns.isEmpty()) {
+            // Get all nodes under element
+            for (XmlNode child : element.getChildren().stream()
+                    .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE)
+                    .collect(Collectors.toList())) {
+                Node childNode = child.getNode();
+                row.put(childNode.getNodeName(), childNode.getTextContent());
+            }
+        }
+        else {
+            // Get specific nodes in a particular order
+            for (String column : columns.get()) {
+                Node childNode = element.getElementByName(column).getNode();
+                row.put(childNode.getNodeName(), childNode.getTextContent());
+            }
         }
 
         table.addRow(row);
