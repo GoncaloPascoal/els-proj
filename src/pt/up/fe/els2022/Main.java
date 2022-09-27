@@ -12,21 +12,20 @@ public class Main {
             return;
         }
 
-        // Read config file from args
+        // Read configuration file from command-line arguments
         ConfigParser configParser = new ConfigParser(args[0]);
 
-        // Convert config file to instructions
+        // Convert configuration file to instructions
         List<Instruction> instructions;
         try {
             instructions = configParser.getInstructions();
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException | IllegalArgumentException e) {
             e.printStackTrace();
             return;
         }
 
         // Execute instructions
-        for (Instruction instruction : instructions) {
-            instruction.execute();
-        }
+        instructions.forEach(i -> i.execute());
     }
 }
