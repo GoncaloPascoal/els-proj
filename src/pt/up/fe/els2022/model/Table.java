@@ -43,6 +43,29 @@ public class Table {
         }
     }
 
+    public void addColumn(String name, List<String> values) {
+        if (getColumnNames().contains(name)) {
+            throw new IllegalArgumentException("Column already exists: " + name);
+        }
+
+        int difference = values.size() - numRows();
+        int absoluteDifference = Math.abs(difference);
+        if (difference > 0) {
+            for (List<String> column : data.values()) {
+                column.add(absoluteDifference, null);
+            }
+        }
+        else if (difference < 0) {
+            values.add(absoluteDifference, null);
+        }
+
+        data.put(name, values);
+    }
+
+    public void addColumns(Map<String, List<String>> columns) {
+        columns.forEach(this::addColumn);
+    }
+
     public void renameColumn(String oldName, String newName) {
         if (data.containsKey(newName)) {
             throw new IllegalArgumentException("Column already exists: " + newName);
@@ -57,7 +80,7 @@ public class Table {
     }
 
     public Set<String> getColumnNames() {
-        return data.keySet();
+        return Collections.unmodifiableSet(data.keySet());
     }
 
     public Map<String, String> getRow(int index) {
@@ -78,5 +101,9 @@ public class Table {
 
     public void concatenate(Table other) {
         addRows(other.data);
+    }
+
+    public void merge(Table other) {
+        addColumns(other.data);
     }
 }

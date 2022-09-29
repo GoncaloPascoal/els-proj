@@ -1,8 +1,11 @@
 package pt.up.fe.els2022.adapters;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
 public abstract class Adapter {
@@ -12,5 +15,11 @@ public abstract class Adapter {
         this.file = file;
     }
 
-    public abstract Table extractTable(String path, List<String> columns);
+    public Table extractTable(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
+        Table table = new Table();
+        Map<String, String> row = new LinkedHashMap<>();
+        metadataColumns.forEach((k, v) -> row.put(k, v.value(file)));
+        table.addRow(row);
+        return table;
+    }
 }

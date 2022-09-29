@@ -3,7 +3,9 @@ package pt.up.fe.els2022.instructions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.els2022.utils.CollectionUtils;
 import pt.up.fe.specs.util.SpecsCollections;
@@ -18,12 +20,14 @@ public class InstructionFactory {
                 Object filesObj = args.get("files");
                 Object keyObj = args.get("key");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
+                Object metadataColumnsObj = args.getOrDefault("metadataColumns", Collections.emptyMap());
 
                 if (filesObj == null || keyObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for load instruction.");
                 }
 
-                if (!(filesObj instanceof List<?> && keyObj instanceof String && columnsObj instanceof List<?>)) {
+                if (!(filesObj instanceof List<?> && keyObj instanceof String && columnsObj instanceof List<?> &&
+                        metadataColumnsObj instanceof Map<?, ?>)) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
 
@@ -31,8 +35,11 @@ public class InstructionFactory {
                     List<String> files = SpecsCollections.cast((List<?>) filesObj, String.class);
                     String key = (String) keyObj;
                     List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
+                    Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
+                        (Map<?, ?>) metadataColumnsObj, String.class, String.class)
+                        .entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> MetadataType.fromId(e.getValue())));
 
-                    return new LoadInstruction(table, files, key, columns);
+                    return new LoadInstruction(table, files, key, columns, metadataColumns);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");

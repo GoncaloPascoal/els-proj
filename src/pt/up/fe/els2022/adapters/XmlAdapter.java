@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.w3c.dom.Node;
 
+import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.specs.util.xml.XmlDocument;
 import pt.up.fe.specs.util.xml.XmlElement;
@@ -19,7 +20,9 @@ public class XmlAdapter extends Adapter {
     }
 
     @Override
-    public Table extractTable(String key, List<String> columns) {
+    public Table extractTable(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
+        Table metadata = super.extractTable(key, columns, metadataColumns);
+
         Table table = new Table();
         Map<String, String> row = new LinkedHashMap<>();
 
@@ -44,6 +47,8 @@ public class XmlAdapter extends Adapter {
         }
 
         table.addRow(row);
-        return table;
+        metadata.merge(table);
+
+        return metadata;
     }
 }
