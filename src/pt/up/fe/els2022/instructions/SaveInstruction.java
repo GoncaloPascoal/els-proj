@@ -3,10 +3,8 @@ package pt.up.fe.els2022.instructions;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import pt.up.fe.els2022.model.Table;
@@ -16,22 +14,16 @@ import pt.up.fe.specs.util.csv.CsvWriter;
 public class SaveInstruction implements Instruction {
     private final Table table;
     private final String path;
-    private final Optional<List<String>> columns;
+    private final List<String> columns;
 
-    public SaveInstruction(Table table, String path, Optional<List<String>> columns) {
-        if (columns.isPresent() && columns.get().isEmpty()) {
-            columns = Optional.empty();
-        }
-
+    public SaveInstruction(Table table, String path, List<String> columns) {
         this.table = table;
         this.path = path;
         this.columns = columns;
     }
 
     public void execute() {
-        System.out.println(table.getColumnNames());
-
-        List<String> saveColumns = columns.orElse(new ArrayList<>(table.getColumnNames()));
+        List<String> saveColumns = columns.isEmpty() ? List.copyOf(table.getColumnNames()) : columns;
 
         if (!table.getColumnNames().containsAll(saveColumns)) {
             throw new RuntimeException("Save instruction references columns that do not exist.");

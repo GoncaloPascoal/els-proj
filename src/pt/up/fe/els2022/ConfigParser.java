@@ -32,9 +32,9 @@ public class ConfigParser {
         List<Map<String, Map<String, Object>>> rawInstructions = yaml.load(inputStream);
 
         for (var rawInstruction : rawInstructions) {
-            for (var instruction : rawInstruction.entrySet()) {
-                String type = instruction.getKey();
-                Map<String, Object> args = instruction.getValue();
+            for (var entry : rawInstruction.entrySet()) {
+                String type = entry.getKey();
+                Map<String, Object> args = entry.getValue();
                 instructions.add(InstructionFactory.createInstruction(type, args));
             }
         }

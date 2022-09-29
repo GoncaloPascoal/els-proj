@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.w3c.dom.Node;
@@ -20,7 +19,7 @@ public class XmlAdapter extends Adapter {
     }
 
     @Override
-    public Table extractTable(String key, Optional<List<String>> columns) {
+    public Table extractTable(String key, List<String> columns) {
         Table table = new Table();
         Map<String, String> row = new LinkedHashMap<>();
 
@@ -38,7 +37,7 @@ public class XmlAdapter extends Adapter {
         }
         else {
             // Get specific nodes in a particular order
-            for (String column : columns.get()) {
+            for (String column : columns) {
                 Node childNode = element.getElementByName(column).getNode();
                 row.put(childNode.getNodeName(), childNode.getTextContent());
             }
