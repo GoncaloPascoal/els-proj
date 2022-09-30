@@ -14,7 +14,7 @@ import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.instructions.InstructionFactory;
 
 public class ConfigParser {
-    private File file;
+    private final File file;
 
     public ConfigParser(File file) {
         this.file = file;

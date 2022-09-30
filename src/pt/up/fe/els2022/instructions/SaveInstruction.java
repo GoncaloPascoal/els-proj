@@ -37,7 +37,7 @@ public class SaveInstruction implements Instruction {
         CsvWriter csvWriter = new CsvWriter(saveColumns);
         for (int i = 0; i < table.numRows(); i++) {
             Map<String, String> row = table.getRow(i);
-            csvWriter.addLine(saveColumns.stream().map(c -> row.get(c)).collect(Collectors.toList()));
+            csvWriter.addLine(saveColumns.stream().map(row::get).collect(Collectors.toList()));
         }
         String csv = csvWriter.buildCsv();
 

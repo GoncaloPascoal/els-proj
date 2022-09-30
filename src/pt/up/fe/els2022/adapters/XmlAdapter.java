@@ -32,8 +32,7 @@ public class XmlAdapter extends Adapter {
         if (columns.isEmpty()) {
             // Get all nodes under element
             for (XmlNode child : element.getChildren().stream()
-                    .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE)
-                    .collect(Collectors.toList())) {
+                    .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE).toList()) {
                 Node childNode = child.getNode();
                 row.put(childNode.getNodeName(), childNode.getTextContent());
             }

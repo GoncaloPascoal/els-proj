@@ -26,6 +26,6 @@ public class Main {
         }
 
         // Execute instructions
-        instructions.forEach(i -> i.execute());
+        instructions.forEach(Instruction::execute);
     }
 }

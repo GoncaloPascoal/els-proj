@@ -11,11 +11,11 @@ public final class CollectionUtils {
             throw new RuntimeException("Cast failed: map contains elements that aren't instances of the specified types.");
         }
 
-        return castMapUnchecked(map, keyClass, valueClass);
+        return castMapUnchecked(map);
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> Map<K, V> castMapUnchecked(Map<?, ?> map, Class<K> keyClass, Class<V> valueClass) {
+    public static <K, V> Map<K, V> castMapUnchecked(Map<?, ?> map) {
         return (Map<K, V>) map;
     }
 }

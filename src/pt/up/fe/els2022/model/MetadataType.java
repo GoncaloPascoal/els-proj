@@ -6,19 +6,19 @@ import java.util.Map;
 import java.util.function.Function;
 
 public enum MetadataType {
-    FILE_NAME("fileName", f -> f.getName()),
-    FILE_PATH("filePath", f -> f.getPath()),
-    ABSOLUTE_FILE_PATH("absoluteFilePath", f -> f.getAbsolutePath());
+    FILE_NAME("fileName", File::getName),
+    FILE_PATH("filePath", File::getPath),
+    ABSOLUTE_FILE_PATH("absoluteFilePath", File::getAbsolutePath);
 
     private final String id;
     private final Function<File, String> function;
 
-    private MetadataType(String id, Function<File, String> function) {
+    MetadataType(String id, Function<File, String> function) {
         this.id = id;
         this.function = function;
     }
 
-    private static Map<String, MetadataType> idMap = new HashMap<>();
+    private static final Map<String, MetadataType> idMap = new HashMap<>();
     static {
         for (var type : MetadataType.values()) {
             idMap.put(type.id, type);

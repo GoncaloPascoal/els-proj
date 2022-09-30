@@ -12,7 +12,7 @@ import pt.up.fe.specs.util.SpecsCollections;
 
 public class InstructionFactory {
     // TODO: Refactor this
-    private static Table table = new Table();
+    private static final Table table = new Table();
 
     public static Instruction createInstruction(String type, Map<String, Object> args) {
         switch (type) {
@@ -37,7 +37,7 @@ public class InstructionFactory {
                     List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
                     Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
                         (Map<?, ?>) metadataColumnsObj, String.class, String.class)
-                        .entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> MetadataType.fromId(e.getValue())));
+                        .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> MetadataType.fromId(e.getValue())));
 
                     return new LoadInstruction(table, files, key, columns, metadataColumns);
                 }
