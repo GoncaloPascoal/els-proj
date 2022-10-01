@@ -1,8 +1,7 @@
 plugins {
-  
-	// For runnable JARs
-	id 'application'
- 	id 'distribution'
+   // For runnable JARs
+   id 'application'
+   id 'distribution'
 }
 
 
@@ -17,16 +16,16 @@ repositories {
 
 
 dependencies {
-    testImplementation "junit:junit:4.11"
+   testImplementation "junit:junit:4.11"
 
-	//! Add your dependencies here
-    implementation 'org.yaml:snakeyaml:1.32'
-    implementation 'org.apache.commons:commons-collections4:4.4'
+   //! Add your dependencies here
+   implementation 'org.yaml:snakeyaml:1.32'
+   implementation 'org.apache.commons:commons-collections4:4.4'
 }
 
 // Add JARs in folder 'libs' as dependencies
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+   implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 
@@ -37,15 +36,16 @@ sourceSets {
          srcDir 'src'               
       }
    }
-	
+   
    test {
       java {
          srcDir 'test'
+         exclude 'res/**'
       }
-	  
-	  resources {
-		srcDir 'test/res'
-	  }
+     
+      resources {
+         srcDir 'test/res'
+      }
    }
     
 }

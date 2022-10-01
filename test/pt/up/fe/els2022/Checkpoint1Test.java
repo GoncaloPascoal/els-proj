@@ -11,7 +11,7 @@ public class Checkpoint1Test {
         Main.main(new String[]{"test/res/checkpoint1/base.yaml"});
         assertEquals(
             SpecsIo.getResource("checkpoint1/expected.csv"),
-            SpecsIo.getResource("checkpoint1/out/base.csv")
+            SpecsIo.read("out/base.csv")
         );
     }
 }
