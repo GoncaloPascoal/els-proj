@@ -1,11 +1,11 @@
 package pt.up.fe.els2022.adapters;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.w3c.dom.Node;
 
 import pt.up.fe.els2022.model.MetadataType;
@@ -24,7 +24,7 @@ public class XmlAdapter extends Adapter {
         Table metadata = super.extractTable(key, columns, metadataColumns);
 
         Table table = new Table();
-        Map<String, String> row = new LinkedHashMap<>();
+        Map<String, String> row = new ListOrderedMap<>();
 
         XmlDocument document = XmlDocument.newInstance(file);
         XmlElement element = document.getElementByName(key);
@@ -32,7 +32,8 @@ public class XmlAdapter extends Adapter {
         if (columns.isEmpty()) {
             // Get all nodes under element
             for (XmlNode child : element.getChildren().stream()
-                    .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE).toList()) {
+                    .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE)
+                    .collect(Collectors.toList())) {
                 Node childNode = child.getNode();
                 row.put(childNode.getNodeName(), childNode.getTextContent());
             }

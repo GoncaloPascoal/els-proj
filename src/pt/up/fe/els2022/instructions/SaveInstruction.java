@@ -43,6 +43,7 @@ public class SaveInstruction implements Instruction {
         String csv = csvWriter.buildCsv();
 
         try {
+            file.getParentFile().mkdirs();
             FileWriter writer = new FileWriter(file);
             writer.write(csv);
             writer.close();
