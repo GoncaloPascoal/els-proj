@@ -13,3 +13,5 @@
 gradlew
 gradlew.bat
 gradle/
+
+test/res/checkpoint1/out/

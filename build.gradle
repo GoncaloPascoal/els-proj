@@ -17,10 +17,11 @@ repositories {
 
 
 dependencies {
-   testImplementation "junit:junit:4.11" 	
+    testImplementation "junit:junit:4.11"
 
 	//! Add your dependencies here
-   implementation 'org.yaml:snakeyaml:1.32'
+    implementation 'org.yaml:snakeyaml:1.32'
+    implementation 'org.apache.commons:commons-collections4:4.4'
 }
 
 // Add JARs in folder 'libs' as dependencies
@@ -43,7 +44,7 @@ sourceSets {
       }
 	  
 	  resources {
-		srcDir 'test'
+		srcDir 'test/res'
 	  }
    }
     

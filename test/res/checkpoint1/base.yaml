@@ -1,0 +1,17 @@
+- load:
+    files:
+      - test/res/checkpoint1/data/vitis-report_1.xml
+      - test/res/checkpoint1/data/vitis-report_2.xml
+      - test/res/checkpoint1/data/vitis-report_3.xml
+    key: Resources
+    columns: [LUT, FF, DSP48E, BRAM_18K]
+    metadataColumns:
+      File: fileName
+- rename:
+    mapping:
+      BRAM_18K: BRAMs
+      DSP48E: DSPs
+      LUT: LUTs
+      FF: FFs
+- save:
+    file: test/res/checkpoint1/out/base.csv
