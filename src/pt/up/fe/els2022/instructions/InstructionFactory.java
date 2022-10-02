@@ -37,7 +37,12 @@ public class InstructionFactory {
                     List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
                     Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
                         (Map<?, ?>) metadataColumnsObj, String.class, String.class)
-                        .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> MetadataType.fromId(e.getValue())));
+                        .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                            var mdType = MetadataType.fromId(e.getValue());
+                            if (mdType == null)
+                                throw new IllegalArgumentException(e.getValue() + " is not a valid type of metadata.");
+                            return mdType;
+                        }));
 
                     return new LoadInstruction(table, files, key, columns, metadataColumns);
                 }
