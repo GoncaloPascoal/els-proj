@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import pt.up.fe.els2022.adapters.Adapter;
-import pt.up.fe.els2022.adapters.AdapterFactory;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.els2022.utils.UnsupportedFileExtensionException;
@@ -27,17 +26,17 @@ public class LoadInstruction implements Instruction {
     }
 
     public void execute() {
-        Adapter adapter;
+        Adapter adapter = new Adapter(key, columns, metadataColumns);
+        Table newTable;
 
         for (String filePath : filePaths) {
             try {
-                adapter = AdapterFactory.createAdapter(filePath);
+                newTable = adapter.extractTable(filePath);
             }
             catch (FileNotFoundException | UnsupportedFileExtensionException e) {
                 throw new RuntimeException(e);
             }
 
-            Table newTable = adapter.extractTable(key, columns, metadataColumns);
             table.concatenate(newTable);
         }
     }
