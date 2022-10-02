@@ -29,5 +29,7 @@ Renames a column or set of columns.
 
 Saves table as a csv file, optionally filtering and reordering the columns to save.
 
+### Parameters
+
 - `file`: Path to the file where the table will be saved. The file and its parent directories will be created if they do not exist.
 - `columns`: List containing the names of columns to save, in the desired order.
