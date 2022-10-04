@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import pt.up.fe.els2022.adapters.Adapter;
+import pt.up.fe.els2022.adapters.AdapterConfiguration;
 import pt.up.fe.els2022.adapters.AdapterFactory;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
@@ -27,17 +28,21 @@ public class LoadInstruction implements Instruction {
     }
 
     public void execute() {
+        AdapterConfiguration configuration = new AdapterConfiguration(key, columns, metadataColumns);
         Adapter adapter;
 
         for (String filePath : filePaths) {
             try {
-                adapter = AdapterFactory.createAdapter(filePath);
+                adapter = AdapterFactory.createAdapter(configuration, filePath);
             }
             catch (FileNotFoundException | UnsupportedFileExtensionException e) {
                 throw new RuntimeException(e);
             }
 
-            Table newTable = adapter.extractTable(key, columns, metadataColumns);
+            if (!adapter.acceptsConfiguration()) {
+                throw new IllegalArgumentException("Missing required arguments for load instruction.");
+            }
+            Table newTable = adapter.extractTable();
             table.concatenate(newTable);
         }
     }

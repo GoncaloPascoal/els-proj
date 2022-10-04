@@ -2,23 +2,27 @@ package pt.up.fe.els2022.adapters;
 
 import java.io.File;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
 public abstract class Adapter {
+    protected AdapterConfiguration configuration;
     protected File file;
 
-    protected Adapter(File file) {
+    protected Adapter(AdapterConfiguration configuration, File file) {
+        this.configuration = configuration;
         this.file = file;
     }
 
-    public Table extractTable(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
+    public boolean acceptsConfiguration() {
+        return configuration != null && configuration.getMetadataColumns() != null;
+    }
+
+    public Table extractTable() {
         Table table = new Table();
         Map<String, String> row = new LinkedHashMap<>();
-        metadataColumns.forEach((k, v) -> row.put(k, v.value(file)));
+        configuration.getMetadataColumns().forEach((k, v) -> row.put(k, v.value(file)));
         table.addRow(row);
         return table;
     }
