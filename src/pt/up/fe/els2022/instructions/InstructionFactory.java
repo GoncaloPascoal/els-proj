@@ -26,8 +26,8 @@ public class InstructionFactory {
                     throw new IllegalArgumentException("Missing required arguments for load instruction.");
                 }
 
-                if (!(filesObj instanceof List<?> && keyObj instanceof String && columnsObj instanceof List<?> &&
-                        metadataColumnsObj instanceof Map<?, ?>)) {
+                if (!(filesObj instanceof List<?> && keyObj instanceof String &&
+                        columnsObj instanceof List<?> && metadataColumnsObj instanceof Map<?, ?>)) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
 

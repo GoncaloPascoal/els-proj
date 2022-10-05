@@ -1,6 +1,7 @@
 package pt.up.fe.els2022.adapters;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,40 +16,45 @@ import pt.up.fe.specs.util.xml.XmlElement;
 import pt.up.fe.specs.util.xml.XmlNode;
 
 public class XmlAdapter extends Adapter {
-    public XmlAdapter(File file) {
-        super(file);
+    public XmlAdapter(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
+        super(key, columns, metadataColumns);
     }
 
     @Override
-    public Table extractTable(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
-        Table metadata = super.extractTable(key, columns, metadataColumns);
-
+    public Table extractTable(List<File> files) {
         Table table = new Table();
-        Map<String, String> row = new ListOrderedMap<>();
+        Map<String, List<String>> rows = new ListOrderedMap<>();
 
-        XmlDocument document = XmlDocument.newInstance(file);
-        XmlElement element = document.getElementByName(key);
+        XmlDocument document;
+        XmlElement element;
 
-        if (columns.isEmpty()) {
-            // Get all nodes under element
-            for (XmlNode child : element.getChildren().stream()
-                    .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE)
-                    .collect(Collectors.toList())) {
-                Node childNode = child.getNode();
-                row.put(childNode.getNodeName(), childNode.getTextContent());
+        for (File file : files) {
+            document = XmlDocument.newInstance(file);
+            element = document.getElementByName(key);
+
+            if (columns.isEmpty()) {
+                // Get all nodes under element
+                for (XmlNode child : element.getChildren().stream()
+                        .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE)
+                        .collect(Collectors.toList())) {
+                    Node childNode = child.getNode();
+                    String nodeName = childNode.getNodeName();
+                    rows.putIfAbsent(nodeName, new ArrayList<>());
+                    rows.get(nodeName).add(childNode.getTextContent());
+                }
+            }
+            else {
+                // Get specific nodes in a particular order
+                for (String column : columns) {
+                    Node childNode = element.getElementByName(column).getNode();
+                    String nodeName = childNode.getNodeName();
+                    rows.putIfAbsent(nodeName, new ArrayList<>());
+                    rows.get(nodeName).add(childNode.getTextContent());
+                }
             }
         }
-        else {
-            // Get specific nodes in a particular order
-            for (String column : columns) {
-                Node childNode = element.getElementByName(column).getNode();
-                row.put(childNode.getNodeName(), childNode.getTextContent());
-            }
-        }
 
-        table.addRow(row);
-        metadata.merge(table);
-
-        return metadata;
+        table.addRows(rows);
+        return table;
     }
 }

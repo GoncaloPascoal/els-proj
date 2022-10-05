@@ -1,6 +1,8 @@
 package pt.up.fe.els2022.model;
 
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.apache.commons.collections4.map.UnmodifiableMap;
+import org.apache.commons.collections4.set.UnmodifiableSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,13 +82,13 @@ public class Table {
     }
 
     public Set<String> getColumnNames() {
-        return Collections.unmodifiableSet(data.keySet());
+        return UnmodifiableSet.unmodifiableSet(data.keySet());
     }
 
     public Map<String, String> getRow(int index) {
         Map<String, String> row = new ListOrderedMap<>();
         data.forEach((k, v) -> row.put(k, v.get(index)));
-        return Collections.unmodifiableMap(row);
+        return UnmodifiableMap.unmodifiableMap(row);
     }
 
     public int numColumns() {
