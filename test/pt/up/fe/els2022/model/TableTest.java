@@ -3,50 +3,80 @@ package pt.up.fe.els2022.model;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.map.ListOrderedMap;
+import org.apache.commons.collections4.set.ListOrderedSet;
+import org.junit.Before;
 import org.junit.Test;
 
 public final class TableTest {
+    private Map<String, String> rowOne, rowTwo;
+    private Set<String> rowOneColumnNames;
+    private Map<String, List<String>> rows;
+
+    private <K, V> Map<K, V> buildMap(List<K> keys, List<V> values) {
+        Map<K, V> map = new ListOrderedMap<>();
+        for (int i = 0; i < keys.size(); ++i) {
+            map.put(keys.get(i), values.get(i));
+        }
+        return map;
+    }
+
+    @Before
+    public void initialize() {
+        List<String> names = Arrays.asList("c1", "c2", "c3");
+        rowOneColumnNames = ListOrderedSet.listOrderedSet(names);
+
+        rowOne = buildMap(names, Arrays.asList("a1", "a2", "a3"));
+        rowTwo = buildMap(Arrays.asList("c2", "c3", "c4"), Arrays.asList("b2", "b3", "b4"));
+
+        rows = buildMap(names, Arrays.asList(
+            Arrays.asList("b1", "c1"),
+            Arrays.asList("b2", "c2"),
+            Arrays.asList("b3", "c3")
+        ));
+    }
+
     @Test
     public void addRowToEmptyTable() {
         Table t = new Table();
-
-        Map<String, String> row = Map.of("c1", "v1", "c2", "v2", "c3", "v3");
-        t.addRow(row);
+        t.addRow(rowOne);
 
         assertEquals(1, t.numRows());
         assertEquals(3, t.numColumns());
-        assertEquals(row, t.getRow(0));
-        assertEquals(Set.of("c1", "c2", "c3"), t.getColumnNames());
+        assertEquals(rowOne, t.getRow(0));
+        assertEquals(rowOneColumnNames, t.getColumnNames());
     }
 
     @Test
     public void addRowWithDifferentColumns() {
         Table t = new Table();
 
-        t.addRow(Map.of("c1", "a1", "c2", "a2"));
-        t.addRow(Map.of("c2", "b2", "c3", "b3"));
+        t.addRow(rowOne);
+        t.addRow(rowTwo);
 
-        assertEquals(3, t.numColumns());
-        assertArrayEquals(new String[]{"a1", "a2", null}, t.getRow(0).values().toArray());
-        assertArrayEquals(new String[]{null, "b2", "b3"}, t.getRow(1).values().toArray());
+        assertEquals(4, t.numColumns());
+        assertArrayEquals(new String[]{"a1", "a2", "a3", null}, t.getRow(0).values().toArray());
+        assertArrayEquals(new String[]{null, "b2", "b3", "b4"}, t.getRow(1).values().toArray());
     }
 
     @Test
     public void concatenateTables() {
         Table t1 = new Table();
-        t1.addRow(Map.of("c1", "1", "c2", "2"));
+        t1.addRow(rowOne);
 
         Table t2 = new Table();
-        t2.addRows(Map.of("c1", List.of("3", "4"), "c2", List.of("5", "6")));
+        t2.addRows(rows);
 
         t1.concatenate(t2);
 
         assertEquals(3, t1.numRows());
-        assertArrayEquals(new String[]{"1", "3", "4"}, t1.getColumn("c1").toArray());
-        assertArrayEquals(new String[]{"2", "5", "6"}, t1.getColumn("c2").toArray());
+        assertArrayEquals(new String[]{"a1", "b1", "c1"}, t1.getColumn("c1").toArray());
+        assertArrayEquals(new String[]{"a2", "b2", "c2"}, t1.getColumn("c2").toArray());
+        assertArrayEquals(new String[]{"a3", "b3", "c3"}, t1.getColumn("c3").toArray());
     }
 }
