@@ -1,29 +1,44 @@
 package pt.up.fe.els2022.adapters;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
 public abstract class Adapter {
-    protected AdapterConfiguration configuration;
-    protected File file;
+    protected String key;
+    protected List<String> columns;
+    protected Map<String, MetadataType> metadataColumns;
 
-    protected Adapter(AdapterConfiguration configuration, File file) {
-        this.configuration = configuration;
-        this.file = file;
+    protected Adapter(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
+        this.key = key;
+        this.columns = columns;
+        this.metadataColumns = metadataColumns;
     }
 
-    public boolean acceptsConfiguration() {
-        return configuration != null && configuration.getMetadataColumns() != null;
+    public Table extractMetadataTable(File file) {
+        return extractMetadataTable(Collections.singletonList(file));
     }
 
-    public Table extractTable() {
+    public Table extractMetadataTable(List<File> files) {
         Table table = new Table();
-        Map<String, String> row = new LinkedHashMap<>();
-        configuration.getMetadataColumns().forEach((k, v) -> row.put(k, v.value(file)));
-        table.addRow(row);
+        Map<String, List<String>> rows = new LinkedHashMap<>();
+        files.forEach(f -> metadataColumns.forEach((k, v) -> {
+            rows.putIfAbsent(k, new ArrayList<>());
+            rows.get(k).add(v.value(f));
+        }));
+        table.addRows(rows);
         return table;
+    }
+
+    public abstract Table extractTable(List<File> files);
+
+    public Table extractTable(File file) {
+        return extractTable(Collections.singletonList(file));
     }
 }

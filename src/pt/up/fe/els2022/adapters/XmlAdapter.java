@@ -1,57 +1,60 @@
 package pt.up.fe.els2022.adapters;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.w3c.dom.Node;
 
+import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.specs.util.xml.XmlDocument;
 import pt.up.fe.specs.util.xml.XmlElement;
 import pt.up.fe.specs.util.xml.XmlNode;
 
 public class XmlAdapter extends Adapter {
-    public XmlAdapter(AdapterConfiguration configuration, File file) {
-        super(configuration, file);
+    public XmlAdapter(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
+        super(key, columns, metadataColumns);
     }
 
     @Override
-    public boolean acceptsConfiguration() {
-        return super.acceptsConfiguration() && configuration.getKey() != null && configuration.getColumns() != null;
-    }
-
-    @Override
-    public Table extractTable() {
-        Table metadata = super.extractTable();
-
+    public Table extractTable(List<File> files) {
         Table table = new Table();
-        Map<String, String> row = new ListOrderedMap<>();
+        Map<String, List<String>> rows = new ListOrderedMap<>();
 
-        XmlDocument document = XmlDocument.newInstance(file);
-        XmlElement element = document.getElementByName(configuration.getKey());
+        XmlDocument document;
+        XmlElement element;
 
-        if (configuration.getColumns().isEmpty()) {
-            // Get all nodes under element
-            for (XmlNode child : element.getChildren().stream()
-                    .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE)
-                    .collect(Collectors.toList())) {
-                Node childNode = child.getNode();
-                row.put(childNode.getNodeName(), childNode.getTextContent());
+        for (File file : files) {
+            document = XmlDocument.newInstance(file);
+            element = document.getElementByName(key);
+
+            if (columns.isEmpty()) {
+                // Get all nodes under element
+                for (XmlNode child : element.getChildren().stream()
+                        .filter(n -> n.getNode().getNodeType() == Node.ELEMENT_NODE)
+                        .collect(Collectors.toList())) {
+                    Node childNode = child.getNode();
+                    String nodeName = childNode.getNodeName();
+                    rows.putIfAbsent(nodeName, new ArrayList<>());
+                    rows.get(nodeName).add(childNode.getTextContent());
+                }
+            }
+            else {
+                // Get specific nodes in a particular order
+                for (String column : columns) {
+                    Node childNode = element.getElementByName(column).getNode();
+                    String nodeName = childNode.getNodeName();
+                    rows.putIfAbsent(nodeName, new ArrayList<>());
+                    rows.get(nodeName).add(childNode.getTextContent());
+                }
             }
         }
-        else {
-            // Get specific nodes in a particular order
-            for (String column : configuration.getColumns()) {
-                Node childNode = element.getElementByName(column).getNode();
-                row.put(childNode.getNodeName(), childNode.getTextContent());
-            }
-        }
 
-        table.addRow(row);
-        metadata.merge(table);
-
-        return metadata;
+        table.addRows(rows);
+        return table;
     }
 }
