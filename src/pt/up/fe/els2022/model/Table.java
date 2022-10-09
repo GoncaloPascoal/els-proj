@@ -16,6 +16,12 @@ public class Table {
         data = new ListOrderedMap<>();
     }
 
+    /** Copy constructor for Table class */
+    public Table(Table other) {
+        data = new ListOrderedMap<>();
+        data.putAll(other.data);
+    }
+
     // TODO: Perhaps extract this to a utility class?
     private static int numRows(Map<String, List<String>> data) {
         return data.values().stream().findFirst().map(List::size).orElse(0);
