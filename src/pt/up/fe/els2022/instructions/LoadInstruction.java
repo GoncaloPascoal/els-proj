@@ -23,7 +23,7 @@ public class LoadInstruction implements Instruction {
     public LoadInstruction(Table table, List<String> filePaths, String key, List<String> columns,
             Map<String, MetadataType> metadataColumns) {
         this.table = table;
-        files = filePaths.stream().map(p -> new File(p)).collect(Collectors.toList());
+        files = filePaths.stream().map(File::new).collect(Collectors.toList());
         if (files.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one source file.");
         }
