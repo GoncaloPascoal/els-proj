@@ -2,15 +2,21 @@ package pt.up.fe.els2022.instructions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import pt.up.fe.els2022.adapters.Adapter;
 import pt.up.fe.els2022.adapters.XmlAdapter;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.els2022.utils.FileUtils;
+import pt.up.fe.els2022.utils.ListFileVisitor;
 import pt.up.fe.els2022.utils.UnsupportedFileExtensionException;
 
 public class LoadInstruction implements Instruction {
@@ -23,10 +29,21 @@ public class LoadInstruction implements Instruction {
     public LoadInstruction(Table table, List<String> filePaths, String key, List<String> columns,
             Map<String, MetadataType> metadataColumns) {
         this.table = table;
-        files = filePaths.stream().map(File::new).collect(Collectors.toList());
+
+        files = new ArrayList<>();
+        try {
+            for (String path : filePaths) {
+                final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path);
+                Files.walkFileTree(Paths.get(""), new ListFileVisitor(files, matcher));
+            }
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (files.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one source file.");
         }
+
         this.key = key;
         this.columns = columns;
         this.metadataColumns = metadataColumns;
