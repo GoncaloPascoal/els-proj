@@ -62,7 +62,7 @@ public class LoadInstruction implements Instruction {
 
         switch (extension) {
             case "xml":
-                return new XmlAdapter(key, columns, metadataColumns);
+                return new XmlAdapter(metadataColumns, key, columns);
             default:
                 throw new UnsupportedFileExtensionException(extension);
         }

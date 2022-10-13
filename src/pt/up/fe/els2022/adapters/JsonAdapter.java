@@ -7,10 +7,9 @@ import java.util.Map;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
-public class JsonAdapter extends Adapter {
-
-    public JsonAdapter(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
-        super(key, columns, metadataColumns);
+public class JsonAdapter extends StructuredAdapter {
+    public JsonAdapter(Map<String, MetadataType> metadataColumns, String key, List<String> columns) {
+        super(metadataColumns, key, columns);
         //TODO Auto-generated constructor stub
     }
 
@@ -19,5 +18,4 @@ public class JsonAdapter extends Adapter {
         // TODO Auto-generated method stub
         return null;
     }
-    
 }

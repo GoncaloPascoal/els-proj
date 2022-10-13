@@ -11,13 +11,9 @@ import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
 public abstract class Adapter {
-    protected String key;
-    protected List<String> columns;
     protected Map<String, MetadataType> metadataColumns;
 
-    protected Adapter(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
-        this.key = key;
-        this.columns = columns;
+    protected Adapter(Map<String, MetadataType> metadataColumns) {
         this.metadataColumns = metadataColumns;
     }
 

@@ -8,9 +8,8 @@ import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
 public class GprofAdapter extends Adapter {
-
-    public GprofAdapter(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
-        super(key, columns, metadataColumns);
+    public GprofAdapter(Map<String, MetadataType> metadataColumns) {
+        super(metadataColumns);
         //TODO Auto-generated constructor stub
     }
 
@@ -19,5 +18,4 @@ public class GprofAdapter extends Adapter {
         // TODO Auto-generated method stub
         return null;
     }
-    
 }

@@ -15,9 +15,9 @@ import pt.up.fe.specs.util.xml.XmlDocument;
 import pt.up.fe.specs.util.xml.XmlElement;
 import pt.up.fe.specs.util.xml.XmlNode;
 
-public class XmlAdapter extends Adapter {
-    public XmlAdapter(String key, List<String> columns, Map<String, MetadataType> metadataColumns) {
-        super(key, columns, metadataColumns);
+public class XmlAdapter extends StructuredAdapter {
+    public XmlAdapter(Map<String, MetadataType> metadataColumns, String key, List<String> columns) {
+        super(metadataColumns, key, columns);
     }
 
     @Override
