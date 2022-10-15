@@ -19,7 +19,7 @@ public class GprofAdapter extends TxtAdapter {
         Arrays.asList(
             new Delimiter(0, 7), new Delimiter(7, 17), new Delimiter(17, 26),
             new Delimiter(26, 35), new Delimiter(35, 44), new Delimiter(44, 53),
-            new Delimiter(53, 53) // TODO: fix this
+            new Delimiter(53, null)
         )
     );
 

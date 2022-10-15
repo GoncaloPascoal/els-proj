@@ -1,9 +1,10 @@
 package pt.up.fe.els2022.adapters;
 
 public class Delimiter {
-    private final int start, end;
+    private final int start;
+    private final Integer end;
     
-    public Delimiter(int start, int end) {
+    public Delimiter(int start, Integer end) {
         this.start = start;
         this.end = end;
     }
@@ -12,7 +13,7 @@ public class Delimiter {
         return start;
     }
 
-    public int getEnd() {
+    public Integer getEnd() {
         return end;
     }
 }

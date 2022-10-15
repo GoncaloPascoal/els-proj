@@ -66,7 +66,9 @@ public class TxtAdapter extends Adapter {
                 for (Map.Entry<String, Delimiter> column : columnDelimiters.entrySet()) {
                     String columnName = column.getKey();
                     Delimiter columnDelimiter = column.getValue();
-                    String columnValue = fileLine.substring(columnDelimiter.getStart(), columnDelimiter.getEnd());
+                    String columnValue = columnDelimiter.getEnd() != null ?
+                            fileLine.substring(columnDelimiter.getStart(), columnDelimiter.getEnd()) :
+                            fileLine.substring(columnDelimiter.getStart());
                     if (stripWhitespace) {
                         columnValue = columnValue.strip();
                     }
