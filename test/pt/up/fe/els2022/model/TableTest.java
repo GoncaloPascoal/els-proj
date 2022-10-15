@@ -8,33 +8,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.collections4.set.ListOrderedSet;
 import org.junit.Before;
 import org.junit.Test;
+
+import pt.up.fe.els2022.utils.CollectionUtils;
 
 public final class TableTest {
     private Map<String, String> rowOne, rowTwo;
     private Set<String> rowOneColumnNames;
     private Map<String, List<String>> rows;
 
-    private <K, V> Map<K, V> buildMap(List<K> keys, List<V> values) {
-        Map<K, V> map = new ListOrderedMap<>();
-        for (int i = 0; i < keys.size(); ++i) {
-            map.put(keys.get(i), values.get(i));
-        }
-        return map;
-    }
-
     @Before
     public void initialize() {
         List<String> names = Arrays.asList("c1", "c2", "c3");
         rowOneColumnNames = ListOrderedSet.listOrderedSet(names);
 
-        rowOne = buildMap(names, Arrays.asList("a1", "a2", "a3"));
-        rowTwo = buildMap(Arrays.asList("c2", "c3", "c4"), Arrays.asList("b2", "b3", "b4"));
+        rowOne = CollectionUtils.buildMap(names, Arrays.asList("a1", "a2", "a3"));
+        rowTwo = CollectionUtils.buildMap(Arrays.asList("c2", "c3", "c4"), Arrays.asList("b2", "b3", "b4"));
 
-        rows = buildMap(names, Arrays.asList(
+        rows = CollectionUtils.buildMap(names, Arrays.asList(
             Arrays.asList("b1", "c1"),
             Arrays.asList("b2", "c2"),
             Arrays.asList("b3", "c3")
