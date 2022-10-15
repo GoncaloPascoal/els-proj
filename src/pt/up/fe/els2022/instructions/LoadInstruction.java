@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import pt.up.fe.els2022.adapters.Adapter;
+import pt.up.fe.els2022.adapters.GprofAdapter;
 import pt.up.fe.els2022.adapters.XmlAdapter;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
@@ -63,6 +64,8 @@ public class LoadInstruction implements Instruction {
         switch (extension) {
             case "xml":
                 return new XmlAdapter(metadataColumns, key, columns);
+            case "txt":
+                return new GprofAdapter(metadataColumns);
             default:
                 throw new UnsupportedFileExtensionException(extension);
         }
@@ -77,6 +80,10 @@ public class LoadInstruction implements Instruction {
         }
         catch (FileNotFoundException | UnsupportedFileExtensionException e) {
             throw new RuntimeException(e);
+        }
+
+        if (!adapter.acceptsConfiguration()) {
+            throw new IllegalArgumentException("Missing required arguments for load instruction.");
         }
 
         newTable = adapter.extractMetadataTable(files);

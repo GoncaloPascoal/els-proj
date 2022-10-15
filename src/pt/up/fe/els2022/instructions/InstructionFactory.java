@@ -16,24 +16,24 @@ public class InstructionFactory {
 
     public static Instruction createInstruction(String type, Map<String, Object> args) {
         switch (type) {
-            case "load": {
+            case "load": { // TODO: refactor this
                 Object filesObj = args.get("files");
                 Object keyObj = args.get("key");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
                 Object metadataColumnsObj = args.getOrDefault("metadataColumns", Collections.emptyMap());
 
-                if (filesObj == null || keyObj == null) {
+                if (filesObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for load instruction.");
                 }
 
-                if (!(filesObj instanceof List<?> && keyObj instanceof String &&
+                if (!(filesObj instanceof List<?> && (keyObj == null || keyObj instanceof String) &&
                         columnsObj instanceof List<?> && metadataColumnsObj instanceof Map<?, ?>)) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
 
                 try {
                     List<String> files = SpecsCollections.cast((List<?>) filesObj, String.class);
-                    String key = (String) keyObj;
+                    String key = keyObj == null ? null : (String) keyObj;
                     List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
                     Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
                         (Map<?, ?>) metadataColumnsObj, String.class, String.class)

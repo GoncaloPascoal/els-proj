@@ -37,4 +37,8 @@ public abstract class Adapter {
     public Table extractTable(File file) {
         return extractTable(Collections.singletonList(file));
     }
+
+    public boolean acceptsConfiguration() {
+        return metadataColumns != null;
+    }
 }

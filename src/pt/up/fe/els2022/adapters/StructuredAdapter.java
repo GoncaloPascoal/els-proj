@@ -14,4 +14,9 @@ public abstract class StructuredAdapter extends Adapter {
         this.key = key;
         this.columns = columns;
     }
+
+    @Override
+    public boolean acceptsConfiguration() {
+        return super.acceptsConfiguration() && this.key != null && this.columns != null;
+    }
 }
