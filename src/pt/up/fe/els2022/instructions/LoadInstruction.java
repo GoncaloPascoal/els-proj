@@ -13,6 +13,7 @@ import java.util.Map;
 
 import pt.up.fe.els2022.adapters.Adapter;
 import pt.up.fe.els2022.adapters.GprofAdapter;
+import pt.up.fe.els2022.adapters.JsonAdapter;
 import pt.up.fe.els2022.adapters.XmlAdapter;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
@@ -64,6 +65,8 @@ public class LoadInstruction implements Instruction {
         switch (extension) {
             case "xml":
                 return new XmlAdapter(metadataColumns, key, columns);
+            case "json":
+                return new JsonAdapter(metadataColumns, key, columns);
             case "txt":
                 return new GprofAdapter(metadataColumns);
             default:

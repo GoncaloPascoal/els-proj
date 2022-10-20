@@ -9,6 +9,10 @@ public class Delimiter {
         this.end = end;
     }
 
+    public Delimiter(int start) {
+        this(start, null);
+    }
+
     public int getStart() {
         return start;
     }
