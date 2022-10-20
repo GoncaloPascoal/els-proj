@@ -18,6 +18,10 @@ public class Table {
 
     /** Copy constructor for Table class */
     public Table(Table other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Table to copy must not be null.");
+        }
+
         data = new ListOrderedMap<>();
         data.putAll(other.data);
     }

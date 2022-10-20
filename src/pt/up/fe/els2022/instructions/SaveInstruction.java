@@ -7,22 +7,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import pt.up.fe.els2022.model.ProgramState;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.els2022.utils.FileUtils;
 import pt.up.fe.specs.util.csv.CsvWriter;
 
 public class SaveInstruction implements Instruction {
-    private final Table table;
+    private final String source;
     private final String path;
     private final List<String> columns;
 
-    public SaveInstruction(Table table, String path, List<String> columns) {
-        this.table = table;
+    public SaveInstruction(String source, String path, List<String> columns) {
+        this.source = source;
         this.path = path;
         this.columns = columns;
     }
 
-    public void execute() {
+    public void execute(ProgramState state) {
+        Table table = state.getTable(source);
         List<String> saveColumns = columns.isEmpty() ? List.copyOf(table.getColumnNames()) : columns;
 
         if (!table.getColumnNames().containsAll(saveColumns)) {

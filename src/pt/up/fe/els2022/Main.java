@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import pt.up.fe.els2022.instructions.Instruction;
+import pt.up.fe.els2022.model.ProgramState;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,6 +12,8 @@ public class Main {
             System.out.println("Usage: els2022-g1 path_to_config");
             return;
         }
+
+        ProgramState state = new ProgramState();
 
         // Read configuration file from command-line arguments
         ConfigParser configParser = new ConfigParser(args[0]);
@@ -26,6 +29,6 @@ public class Main {
         }
 
         // Execute instructions
-        instructions.forEach(Instruction::execute);
+        instructions.forEach(i -> i.execute(state));
     }
 }

@@ -6,34 +6,32 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import pt.up.fe.els2022.model.MetadataType;
-import pt.up.fe.els2022.model.Table;
 import pt.up.fe.els2022.utils.CollectionUtils;
 import pt.up.fe.specs.util.SpecsCollections;
 
 public class InstructionFactory {
-    // TODO: Refactor this
-    private static final Table table = new Table();
-
     public static Instruction createInstruction(String type, Map<String, Object> args) {
         switch (type) {
             case "load": { // TODO: refactor this
+                Object targetObj = args.get("target");
                 Object filesObj = args.get("files");
                 Object keyObj = args.get("key");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
                 Object metadataColumnsObj = args.getOrDefault("metadataColumns", Collections.emptyMap());
 
-                if (filesObj == null) {
+                if (targetObj == null || filesObj == null || keyObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for load instruction.");
                 }
 
-                if (!(filesObj instanceof List<?> && (keyObj == null || keyObj instanceof String) &&
+                if (!(targetObj instanceof String && filesObj instanceof List<?> && keyObj instanceof String &&
                         columnsObj instanceof List<?> && metadataColumnsObj instanceof Map<?, ?>)) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
 
                 try {
+                    String target = (String) targetObj;
                     List<String> files = SpecsCollections.cast((List<?>) filesObj, String.class);
-                    String key = keyObj == null ? null : (String) keyObj;
+                    String key = (String) keyObj;
                     List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
                     Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
                         (Map<?, ?>) metadataColumnsObj, String.class, String.class)
@@ -44,45 +42,53 @@ public class InstructionFactory {
                             return mdType;
                         }));
 
-                    return new LoadInstruction(table, files, key, columns, metadataColumns);
+                    return new LoadInstruction(target, files, key, columns, metadataColumns);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
             }
             case "rename": {
+                Object sourceObj = args.get("source");
                 Object mappingObj = args.get("mapping");
 
-                if (mappingObj == null) {
+                if (sourceObj == null || mappingObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for rename instruction.");
                 }
 
+                if (!(sourceObj instanceof String && mappingObj instanceof Map<?, ?>)) {
+                    throw new IllegalArgumentException("Incorrect argument types for rename instruction.");
+                }
+
                 try {
+                    String source = (String) sourceObj;
                     Map<String, String> mapping = CollectionUtils.castMap((Map<?, ?>) mappingObj, String.class, String.class);
 
-                    return new RenameInstruction(table, mapping);
+                    return new RenameInstruction(source, mapping);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for rename instruction.");
                 }
             }
             case "save": {
+                Object sourceObj = args.get("source");
                 Object fileObj = args.get("file");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
 
-                if (fileObj == null) {
+                if (sourceObj == null || fileObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for save instruction.");
                 }
 
-                if (!(fileObj instanceof String && columnsObj instanceof List<?>)) {
+                if (!(sourceObj instanceof String && fileObj instanceof String && columnsObj instanceof List<?>)) {
                     throw new IllegalArgumentException("Incorrect argument types for save instruction.");
                 }
 
                 try {
+                    String source = (String) sourceObj;
                     String file = (String) fileObj;
                     List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
 
-                    return new SaveInstruction(table, file, columns);
+                    return new SaveInstruction(source, file, columns);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for save instruction.");

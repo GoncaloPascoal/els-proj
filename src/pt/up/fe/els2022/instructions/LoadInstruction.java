@@ -16,21 +16,22 @@ import pt.up.fe.els2022.adapters.GprofAdapter;
 import pt.up.fe.els2022.adapters.JsonAdapter;
 import pt.up.fe.els2022.adapters.XmlAdapter;
 import pt.up.fe.els2022.model.MetadataType;
+import pt.up.fe.els2022.model.ProgramState;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.els2022.utils.FileUtils;
 import pt.up.fe.els2022.utils.ListFileVisitor;
 import pt.up.fe.els2022.utils.UnsupportedFileExtensionException;
 
 public class LoadInstruction implements Instruction {
-    private final Table table;
+    private final String target;
     private final List<File> files;
     private final String key;
     private final List<String> columns;
     private final Map<String, MetadataType> metadataColumns;
 
-    public LoadInstruction(Table table, List<String> filePaths, String key, List<String> columns,
+    public LoadInstruction(String target, List<String> filePaths, String key, List<String> columns,
             Map<String, MetadataType> metadataColumns) {
-        this.table = table;
+        this.target = target;
 
         files = new ArrayList<>();
         try {
@@ -74,7 +75,7 @@ public class LoadInstruction implements Instruction {
         }
     }
 
-    public void execute() {
+    public void execute(ProgramState state) {
         Table newTable;
         Adapter adapter;
 
@@ -92,6 +93,6 @@ public class LoadInstruction implements Instruction {
         newTable = adapter.extractMetadataTable(files);
         newTable.merge(adapter.extractTable(files));
 
-        table.concatenate(newTable);
+        state.getOrCreateTable(target).concatenate(newTable);
     }
 }
