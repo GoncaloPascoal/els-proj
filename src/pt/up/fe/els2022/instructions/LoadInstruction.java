@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import pt.up.fe.els2022.adapters.Adapter;
-import pt.up.fe.els2022.adapters.GprofAdapter;
 import pt.up.fe.els2022.adapters.JsonAdapter;
+import pt.up.fe.els2022.adapters.TxtAdapter;
 import pt.up.fe.els2022.adapters.XmlAdapter;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.ProgramState;
@@ -69,7 +69,7 @@ public class LoadInstruction implements Instruction {
             case "json":
                 return new JsonAdapter(metadataColumns, key, columns);
             case "txt":
-                return new GprofAdapter(metadataColumns);
+                return new TxtAdapter(metadataColumns, null, null, true);
             default:
                 throw new UnsupportedFileExtensionException(extension);
         }
