@@ -70,6 +70,28 @@ public class InstructionFactory {
                     throw new IllegalArgumentException("Incorrect argument types for rename instruction.");
                 }
             }
+            case "merge": {
+                Object tablesObj = args.get("tables");
+                Object targetObj = args.get("target");
+
+                if (tablesObj == null) {
+                    throw new IllegalArgumentException("Missing required arguments for merge instruction.");
+                }
+
+                if (!(tablesObj instanceof List<?> && (targetObj == null || targetObj instanceof String))) {
+                    throw new IllegalArgumentException("Incorrect argument types for merge instruction.");
+                }
+
+                try {
+                    List<String> tables = SpecsCollections.cast((List<?>) tablesObj, String.class);
+                    String target = targetObj == null ? null : (String) targetObj;
+
+                    return new MergeInstruction(tables, target);
+                }
+                catch (RuntimeException ex) {
+                    throw new IllegalArgumentException("Incorrect argument types for merge instruction.");
+                }
+            }
             case "save": {
                 Object sourceObj = args.get("source");
                 Object fileObj = args.get("file");
