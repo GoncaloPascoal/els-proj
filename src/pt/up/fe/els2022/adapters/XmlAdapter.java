@@ -9,15 +9,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.w3c.dom.Node;
 
-import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.specs.util.xml.XmlDocument;
 import pt.up.fe.specs.util.xml.XmlElement;
 import pt.up.fe.specs.util.xml.XmlNode;
 
 public class XmlAdapter extends StructuredAdapter {
-    public XmlAdapter(Map<String, MetadataType> metadataColumns, String key, List<String> columns) {
-        super(metadataColumns, key, columns);
+    public XmlAdapter(String key, List<String> columns) {
+        super(key, columns);
     }
 
     @Override

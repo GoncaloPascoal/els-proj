@@ -12,7 +12,7 @@ import pt.up.fe.specs.util.SpecsCollections;
 public class InstructionFactory {
     public static Instruction createInstruction(String type, Map<String, Object> args) {
         switch (type) {
-            case "load": { // TODO: refactor this
+            case "loadStructured": {
                 Object targetObj = args.get("target");
                 Object filesObj = args.get("files");
                 Object keyObj = args.get("key");
@@ -42,11 +42,14 @@ public class InstructionFactory {
                             return mdType;
                         }));
 
-                    return new LoadInstruction(target, files, key, columns, metadataColumns);
+                    return new LoadStructuredInstruction(target, files, metadataColumns, key, columns);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
+            }
+            case "loadUnstructured": {
+                // TODO
             }
             case "rename": {
                 Object sourceObj = args.get("source");

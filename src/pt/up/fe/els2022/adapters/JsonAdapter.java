@@ -14,12 +14,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
 public class JsonAdapter extends StructuredAdapter {
-    public JsonAdapter(Map<String, MetadataType> metadataColumns, String key, List<String> columns) {
-        super(metadataColumns, key, columns);
+    public JsonAdapter(String key, List<String> columns) {
+        super(key, columns);
     }
 
     public JsonElement findByKey(JsonElement current, String key) {

@@ -11,17 +11,11 @@ import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 
 public abstract class Adapter {
-    protected Map<String, MetadataType> metadataColumns;
-
-    protected Adapter(Map<String, MetadataType> metadataColumns) {
-        this.metadataColumns = metadataColumns;
+    public static Table extractMetadataTable(Map<String, MetadataType> metadataColumns, File file) {
+        return extractMetadataTable(metadataColumns, Collections.singletonList(file));
     }
 
-    public Table extractMetadataTable(File file) {
-        return extractMetadataTable(Collections.singletonList(file));
-    }
-
-    public Table extractMetadataTable(List<File> files) {
+    public static Table extractMetadataTable(Map<String, MetadataType> metadataColumns, List<File> files) {
         Table table = new Table();
         Map<String, List<String>> rows = new LinkedHashMap<>();
         files.forEach(f -> metadataColumns.forEach((k, v) -> {
@@ -36,9 +30,5 @@ public abstract class Adapter {
 
     public Table extractTable(File file) {
         return extractTable(Collections.singletonList(file));
-    }
-
-    public boolean acceptsConfiguration() {
-        return metadataColumns != null;
     }
 }

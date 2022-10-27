@@ -8,7 +8,6 @@ import java.util.SortedSet;
 
 import org.apache.commons.collections4.map.ListOrderedMap;
 
-import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Table;
 import pt.up.fe.specs.util.utilities.LineStream;
 
@@ -17,8 +16,7 @@ public class TxtAdapter extends Adapter {
     private final Map<String, Delimiter> columnDelimiters;
     private final boolean stripWhitespace;
 
-    public TxtAdapter(Map<String, MetadataType> metadataColumns, SortedSet<Integer> lines, Map<String, Delimiter> columnDelimiters, boolean stripWhitespace) {
-        super(metadataColumns);
+    public TxtAdapter(SortedSet<Integer> lines, Map<String, Delimiter> columnDelimiters, boolean stripWhitespace) {
         this.lines = lines;
         this.columnDelimiters = columnDelimiters;
         this.stripWhitespace = stripWhitespace;
