@@ -26,7 +26,14 @@ public class SaveBuilder extends InstructionBuilder {
     }
 
     @Override
-    public Instruction create() {
+    protected void validate() {
+        if (source == null || path == null) {
+            throw new RuntimeException("Missing arguments for save instruction.");
+        }
+    }
+
+    @Override
+    protected Instruction createUnsafe() {
         return new SaveInstruction(source, path, columns);
     }
 }

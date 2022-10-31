@@ -20,7 +20,14 @@ public class MergeBuilder extends InstructionBuilder {
     }
 
     @Override
-    public Instruction create() {
+    protected void validate() {
+        if (tables == null) {
+            throw new RuntimeException("Missing arguments for merge instruction.");
+        }
+    }
+
+    @Override
+    protected Instruction createUnsafe() {
         return new MergeInstruction(tables, target);
     }
 }

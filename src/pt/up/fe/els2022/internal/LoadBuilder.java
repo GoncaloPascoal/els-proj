@@ -24,4 +24,11 @@ public abstract class LoadBuilder extends InstructionBuilder {
         this.metadataColumns = metadataColumns;
         return this;
     }
+
+    @Override
+    protected void validate() {
+        if (target == null || filePaths == null) {
+            throw new RuntimeException("Missing arguments for load instruction.");
+        }
+    }
 }

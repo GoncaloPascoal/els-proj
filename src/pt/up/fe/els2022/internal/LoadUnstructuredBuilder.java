@@ -5,7 +5,7 @@ import pt.up.fe.els2022.instructions.LoadUnstructuredInstruction;
 
 public class LoadUnstructuredBuilder extends LoadBuilder {
     @Override
-    public Instruction create() {
+    protected Instruction createUnsafe() {
         return new LoadUnstructuredInstruction(target, filePaths, metadataColumns);
     }
 }

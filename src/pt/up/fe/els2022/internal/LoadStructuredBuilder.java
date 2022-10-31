@@ -20,7 +20,15 @@ public class LoadStructuredBuilder extends LoadBuilder {
     }
 
     @Override
-    public Instruction create() {
+    protected void validate() {
+        super.validate();
+        if (key == null) {
+            throw new RuntimeException("Missing arguments for loadStructured instruction.");
+        }
+    }
+
+    @Override
+    protected Instruction createUnsafe() {
         return new LoadStructuredInstruction(target, filePaths, metadataColumns, key, columns);
     }
 }

@@ -20,7 +20,14 @@ public class RenameBuilder extends InstructionBuilder {
     }
 
     @Override
-    public Instruction create() {
+    protected void validate() {
+        if (source == null || mapping == null) {
+            throw new RuntimeException("Missing arguments for rename instruction.");
+        }
+    }
+
+    @Override
+    protected Instruction createUnsafe() {
         return new RenameInstruction(source, mapping);
     }
 }
