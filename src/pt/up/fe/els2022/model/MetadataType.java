@@ -8,7 +8,8 @@ import java.util.function.Function;
 public enum MetadataType {
     FILE_NAME("fileName", File::getName),
     FILE_PATH("filePath", File::getPath),
-    ABSOLUTE_FILE_PATH("absoluteFilePath", File::getAbsolutePath);
+    ABSOLUTE_FILE_PATH("absoluteFilePath", File::getAbsolutePath),
+    DIRECTORY("directory", File::getParent);
 
     private final String id;
     private final Function<File, String> function;
