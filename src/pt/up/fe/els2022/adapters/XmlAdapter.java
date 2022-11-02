@@ -15,8 +15,8 @@ import pt.up.fe.specs.util.xml.XmlElement;
 import pt.up.fe.specs.util.xml.XmlNode;
 
 public class XmlAdapter extends StructuredAdapter {
-    public XmlAdapter(String key, List<String> columns) {
-        super(key, columns);
+    public XmlAdapter(String path, List<String> columns) {
+        super(path, columns);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class XmlAdapter extends StructuredAdapter {
 
         for (File file : files) {
             document = XmlDocument.newInstance(file);
-            element = document.getElementByName(key);
+            element = document.getElementByName(path);
 
             if (columns.isEmpty()) {
                 // Get all nodes under element

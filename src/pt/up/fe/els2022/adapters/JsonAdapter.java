@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.map.ListOrderedMap;
 
@@ -17,24 +19,53 @@ import com.google.gson.JsonParser;
 import pt.up.fe.els2022.model.Table;
 
 public class JsonAdapter extends StructuredAdapter {
-    public JsonAdapter(String key, List<String> columns) {
-        super(key, columns);
+    public JsonAdapter(String path, List<String> columns) {
+        super(path, columns);
     }
 
-    public JsonElement findByKey(JsonElement current, String key) {
+    private JsonElement findByKey(JsonElement current, List<PathFragment> fragments, int fragmentIdx) {
+        PathFragment fragment = fragments.get(fragmentIdx);
+
         if (current.isJsonObject()) {
             JsonObject currentObj = current.getAsJsonObject();
-            
-            JsonElement element = currentObj.get(key);
-            if (element != null) return element;
 
-            for (Entry<String, JsonElement> entry : currentObj.entrySet()) {
-                element = findByKey(entry.getValue(), key);
+            JsonElement element = currentObj.get(fragment.getKey());
+            if (element != null) {
+                if (fragmentIdx == fragments.size() - 1) {
+                    return element;
+                }
+                element = findByKey(element, fragments, fragmentIdx + 1);
                 if (element != null) return element;
+            }
+
+            if (!fragment.isDirectChild()) {
+                for (Entry<String, JsonElement> entry : currentObj.entrySet()) {
+                    element = findByKey(entry.getValue(), fragments, fragmentIdx);
+                    if (element != null) return element;
+                }
             }
         }
 
         return null;
+    }
+
+    private List<PathFragment> splitPath() {
+        List<PathFragment> fragments = new ArrayList<>();
+
+        String[] doubleSlash = path.split("//");
+        List<List<String>> result = Stream.of(doubleSlash).map(s -> List.of(s.split("/"))).collect(Collectors.toList());
+
+        for (List<String> part : result) {
+            String firstKey = part.get(0);
+
+            if (!firstKey.isBlank()) {
+                fragments.add(new PathFragment(firstKey, false));
+            }
+
+            part.stream().skip(1).forEach(key -> fragments.add(new PathFragment(key, true)));
+        }
+
+        return fragments;
     }
 
     @Override
@@ -47,7 +78,12 @@ public class JsonAdapter extends StructuredAdapter {
                 String contents = Files.readString(file.toPath());
                 JsonElement root = JsonParser.parseString(contents);
 
-                JsonElement element = findByKey(root, key);
+                JsonElement element = root;
+                if (!path.equals("/")) {
+                    List<PathFragment> fragments = splitPath();
+                    element = findByKey(root, fragments, 0);
+                }
+
                 JsonObject obj = element.getAsJsonObject();
 
                 if (columns.isEmpty()) {

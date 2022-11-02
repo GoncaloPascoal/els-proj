@@ -12,13 +12,13 @@ import pt.up.fe.els2022.utils.FileUtils;
 import pt.up.fe.els2022.utils.UnsupportedFileExtensionException;
 
 public class LoadStructuredInstruction extends LoadInstruction {
-    private final String key;
+    private final String path;
     private final List<String> columns;
 
     public LoadStructuredInstruction(String target, List<String> filePaths, Map<String, MetadataType> metadataColumns,
-            String key, List<String> columns) {
+            String path, List<String> columns) {
         super(target, filePaths, metadataColumns);
-        this.key = key;
+        this.path = path;
         this.columns = columns;
     }
 
@@ -35,9 +35,9 @@ public class LoadStructuredInstruction extends LoadInstruction {
 
         switch (extension) {
             case "xml":
-                return new XmlAdapter(key, columns);
+                return new XmlAdapter(path, columns);
             case "json":
-                return new JsonAdapter(key, columns);
+                return new JsonAdapter(path, columns);
             default:
                 throw new UnsupportedFileExtensionException(extension);
         }

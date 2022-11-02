@@ -15,15 +15,15 @@ public class InstructionFactory {
             case "loadStructured": {
                 Object targetObj = args.get("target");
                 Object filesObj = args.get("files");
-                Object keyObj = args.get("key");
+                Object pathObj = args.get("path");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
                 Object metadataColumnsObj = args.getOrDefault("metadataColumns", Collections.emptyMap());
 
-                if (targetObj == null || filesObj == null || keyObj == null) {
+                if (targetObj == null || filesObj == null || pathObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for load instruction.");
                 }
 
-                if (!(targetObj instanceof String && filesObj instanceof List<?> && keyObj instanceof String &&
+                if (!(targetObj instanceof String && filesObj instanceof List<?> && pathObj instanceof String &&
                         columnsObj instanceof List<?> && metadataColumnsObj instanceof Map<?, ?>)) {
                     throw new IllegalArgumentException("Incorrect argument types for load instruction.");
                 }
@@ -31,7 +31,7 @@ public class InstructionFactory {
                 try {
                     String target = (String) targetObj;
                     List<String> files = SpecsCollections.cast((List<?>) filesObj, String.class);
-                    String key = (String) keyObj;
+                    String key = (String) pathObj;
                     List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
                     Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
                         (Map<?, ?>) metadataColumnsObj, String.class, String.class)

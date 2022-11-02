@@ -6,11 +6,11 @@ import pt.up.fe.els2022.instructions.LoadStructuredInstruction;
 import java.util.List;
 
 public class LoadStructuredBuilder extends LoadBuilder<LoadStructuredBuilder> {
-    private String key;
+    private String path;
     private List<String> columns;
 
-    public LoadStructuredBuilder withKey(String key) {
-        this.key = key;
+    public LoadStructuredBuilder withPath(String path) {
+        this.path = path;
         return this;
     }
 
@@ -22,13 +22,13 @@ public class LoadStructuredBuilder extends LoadBuilder<LoadStructuredBuilder> {
     @Override
     protected void validate() {
         super.validate();
-        if (key == null) {
+        if (path == null) {
             throw new RuntimeException("Missing arguments for loadStructured instruction.");
         }
     }
 
     @Override
     protected Instruction createUnsafe() {
-        return new LoadStructuredInstruction(target, filePaths, metadataColumns, key, columns);
+        return new LoadStructuredInstruction(target, filePaths, metadataColumns, path, columns);
     }
 }

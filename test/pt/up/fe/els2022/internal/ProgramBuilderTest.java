@@ -17,7 +17,7 @@ public class ProgramBuilderTest {
 
         builder.loadStructured()
             .withColumns(List.of("LUT", "FF", "DSP48E", "BRAM_18K"))
-            .withKey("Resources")
+            .withPath("Resources")
             .withFilePaths(List.of("test/res/checkpoint1/data/vitis-report_*.xml"))
             .withTarget("t");
 
