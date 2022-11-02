@@ -5,24 +5,29 @@ import pt.up.fe.els2022.model.MetadataType;
 import java.util.List;
 import java.util.Map;
 
-public abstract class LoadBuilder extends InstructionBuilder {
+public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionBuilder {
     protected String target;
     protected List<String> filePaths;
     protected Map<String, MetadataType> metadataColumns;
 
-    public LoadBuilder withTarget(String target) {
+    public T withTarget(String target) {
         this.target = target;
-        return this;
+        return thisSubclass();
     }
 
-    public LoadBuilder withFilePaths(List<String> filePaths) {
+    public T withFilePaths(List<String> filePaths) {
         this.filePaths = filePaths;
-        return this;
+        return thisSubclass();
     }
 
-    public LoadBuilder withMetadataColumns(Map<String, MetadataType> metadataColumns) {
+    public T withMetadataColumns(Map<String, MetadataType> metadataColumns) {
         this.metadataColumns = metadataColumns;
-        return this;
+        return thisSubclass();
+    }
+
+    @SuppressWarnings("unchecked")
+    private T thisSubclass() {
+        return (T) this;
     }
 
     @Override

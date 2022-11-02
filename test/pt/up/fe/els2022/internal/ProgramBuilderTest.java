@@ -15,7 +15,6 @@ public class ProgramBuilderTest {
     public void internalDsl() {
         ProgramBuilder builder = new ProgramBuilder();
 
-        // TODO: LoadStructured methods return a LoadBuilder instead of the child class
         builder.loadStructured()
             .withColumns(List.of("LUT", "FF", "DSP48E", "BRAM_18K"))
             .withKey("Resources")

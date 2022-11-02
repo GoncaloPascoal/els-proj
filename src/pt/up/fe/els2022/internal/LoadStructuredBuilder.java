@@ -5,7 +5,7 @@ import pt.up.fe.els2022.instructions.LoadStructuredInstruction;
 
 import java.util.List;
 
-public class LoadStructuredBuilder extends LoadBuilder {
+public class LoadStructuredBuilder extends LoadBuilder<LoadStructuredBuilder> {
     private String key;
     private List<String> columns;
 
