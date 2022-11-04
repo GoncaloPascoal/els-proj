@@ -53,8 +53,8 @@ public class ColumnIntervalInstruction implements TextInstruction {
                 String name = column.getKey();
                 Interval interval = column.getValue();
                 String value = interval.getEnd() != null ?
-                        txtLine.substring(interval.getStart(), interval.getEnd()) :
-                        txtLine.substring(interval.getStart());
+                        txtLine.substring(interval.getStart() - 1, interval.getEnd() - 1) :
+                        txtLine.substring(interval.getStart() - 1);
 
                 if (stripWhitespace) {
                     value = value.strip();

@@ -84,6 +84,11 @@ public class JsonAdapter extends StructuredAdapter {
                     element = findByKey(root, fragments, 0);
                 }
 
+                if (element == null) {
+                    throw new RuntimeException("Could not find an element that matches the specified path: " + path +
+                            "in file " + file.getName() + ".");
+                }
+
                 JsonObject obj = element.getAsJsonObject();
 
                 if (columns.isEmpty()) {
@@ -92,9 +97,9 @@ public class JsonAdapter extends StructuredAdapter {
                         String colName = entry.getKey();
                         JsonElement colValue = entry.getValue();
 
-                        if (colValue.isJsonPrimitive()) {
+                        if (colValue.isJsonPrimitive() || colValue.isJsonNull()) {
                             rows.putIfAbsent(colName, new ArrayList<>());
-                            rows.get(colName).add(colValue.getAsString());
+                            rows.get(colName).add(colValue.isJsonPrimitive() ? colValue.getAsString() : "null");
                         }
                     }
                 }
@@ -102,11 +107,11 @@ public class JsonAdapter extends StructuredAdapter {
                     // Get specific key-value pairs in a particular order
                     for (String colName : columns) {
                         JsonElement colValue = obj.get(colName);
-                        if (colValue == null || !colValue.isJsonPrimitive()) {
+                        if (colValue == null || !colValue.isJsonPrimitive() || !colValue.isJsonNull()) {
                             throw new RuntimeException("Column " + colName + " does not exist or does not correspond to a primitive value.");
                         }
                         rows.putIfAbsent(colName, new ArrayList<>());
-                        rows.get(colName).add(colValue.getAsString());
+                        rows.get(colName).add(colValue.isJsonPrimitive() ? colValue.getAsString() : "null");
                     }
                 }
             }
