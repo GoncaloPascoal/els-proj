@@ -5,6 +5,10 @@ public class Interval {
     private final Integer end;
 
     public Interval(int start, Integer end) {
+        if (end != null && end < start) {
+            throw new IllegalArgumentException("Invalid interval: 'end' cannot be smaller than 'start'");
+        }
+
         this.start = start;
         this.end = end;
     }

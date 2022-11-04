@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.IntStream;
 
 import org.apache.commons.collections4.map.ListOrderedMap;
 
@@ -17,9 +19,17 @@ public class ColumnIntervalInstruction implements TextInstruction {
     private final Map<String, Interval> columnIntervals;
     private final boolean stripWhitespace;
 
-    public ColumnIntervalInstruction(SortedSet<Integer> lines,
+    public ColumnIntervalInstruction(List<Interval> lines,
             Map<String, Interval> columnIntervals, Boolean stripWhitespace) {
-        this.lines = lines;
+        this.lines = new TreeSet<>();
+        lines.forEach(interval -> {
+            int start = interval.getStart();
+            Integer end = interval.getEnd();
+            if (end == null) end = start;
+
+            IntStream.rangeClosed(start, end).forEach(this.lines::add);
+        });
+
         this.columnIntervals = columnIntervals;
 
         if (stripWhitespace == null) stripWhitespace = true;

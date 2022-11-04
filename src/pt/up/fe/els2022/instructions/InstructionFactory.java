@@ -5,51 +5,109 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import pt.up.fe.els2022.instructions.text.TextInstruction;
+import pt.up.fe.els2022.instructions.text.TextInstructionFactory;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.utils.CollectionUtils;
 import pt.up.fe.specs.util.SpecsCollections;
 
 public class InstructionFactory {
+    private static class LoadParameters {
+        public String target;
+        public List<String> files;
+        public Map<String, MetadataType> metadataColumns;
+
+        public LoadParameters(String target, List<String> files, Map<String, MetadataType> metadataColumns) {
+            this.target = target;
+            this.files = files;
+            this.metadataColumns = metadataColumns;
+        }
+    }
+
+    private static LoadParameters parseLoadParameters(Map<String, Object> args) {
+        Object targetObj = args.get("target");
+        Object filesObj = args.get("files");
+        Object metadataColumnsObj = args.getOrDefault("metadataColumns", Collections.emptyMap());
+
+        if (targetObj == null || filesObj == null) {
+            throw new IllegalArgumentException("Missing required arguments for load instruction.");
+        }
+
+        if (!(targetObj instanceof String && filesObj instanceof List<?> && metadataColumnsObj instanceof Map<?, ?>)) {
+            throw new IllegalArgumentException("Incorrect argument types for load instruction.");
+        }
+
+        try {
+            String target = (String) targetObj;
+            List<String> files = SpecsCollections.cast((List<?>) filesObj, String.class);
+            Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
+                            (Map<?, ?>) metadataColumnsObj, String.class, String.class)
+                    .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                        var mdType = MetadataType.fromId(e.getValue());
+                        if (mdType == null)
+                            throw new IllegalArgumentException(e.getValue() + " is not a valid type of metadata.");
+                        return mdType;
+                    }));
+
+            return new LoadParameters(target, files, metadataColumns);
+        }
+        catch (RuntimeException ex) {
+            throw new IllegalArgumentException("Incorrect argument types for load instruction.");
+        }
+    }
+
     public static Instruction createInstruction(String type, Map<String, Object> args) {
         switch (type) {
             case "loadStructured": {
-                Object targetObj = args.get("target");
-                Object filesObj = args.get("files");
+                LoadParameters loadParameters = parseLoadParameters(args);
                 Object pathObj = args.get("path");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
-                Object metadataColumnsObj = args.getOrDefault("metadataColumns", Collections.emptyMap());
 
-                if (targetObj == null || filesObj == null || pathObj == null) {
-                    throw new IllegalArgumentException("Missing required arguments for load instruction.");
+                if (pathObj == null) {
+                    throw new IllegalArgumentException("Missing required arguments for loadStructured instruction.");
                 }
 
-                if (!(targetObj instanceof String && filesObj instanceof List<?> && pathObj instanceof String &&
-                        columnsObj instanceof List<?> && metadataColumnsObj instanceof Map<?, ?>)) {
-                    throw new IllegalArgumentException("Incorrect argument types for load instruction.");
+                if (!(pathObj instanceof String && (columnsObj == null || columnsObj instanceof List<?>))) {
+                    throw new IllegalArgumentException("Incorrect argument types for loadStructured instruction.");
                 }
 
                 try {
-                    String target = (String) targetObj;
-                    List<String> files = SpecsCollections.cast((List<?>) filesObj, String.class);
                     String key = (String) pathObj;
-                    List<String> columns = SpecsCollections.cast((List<?>) columnsObj, String.class);
-                    Map<String, MetadataType> metadataColumns = CollectionUtils.castMap(
-                        (Map<?, ?>) metadataColumnsObj, String.class, String.class)
-                        .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> {
-                            var mdType = MetadataType.fromId(e.getValue());
-                            if (mdType == null)
-                                throw new IllegalArgumentException(e.getValue() + " is not a valid type of metadata.");
-                            return mdType;
-                        }));
-
-                    return new LoadStructuredInstruction(target, files, metadataColumns, key, columns);
+                    List<String> columns = columnsObj == null ? null : SpecsCollections.cast((List<?>) columnsObj, String.class);
+                    return new LoadStructuredInstruction(loadParameters.target, loadParameters.files, loadParameters.metadataColumns, key, columns);
                 }
                 catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for load instruction.");
+                    throw new IllegalArgumentException("Incorrect argument types for loadStructured instruction.");
                 }
             }
             case "loadUnstructured": {
-                // TODO
+                LoadParameters loadParameters = parseLoadParameters(args);
+                Object instructionsObj = args.get("instructions");
+
+                if (instructionsObj == null) {
+                    throw new IllegalArgumentException("Missing required arguments for loadUnstructured instruction.");
+                }
+
+                if (!(instructionsObj instanceof List<?>)) {
+                    throw new IllegalArgumentException("Incorrect argument types for loadUnstructured instruction.");
+                }
+
+                try {
+                    List<Map> genericMap = SpecsCollections.cast((List<?>) instructionsObj, Map.class);
+                    List<TextInstruction> instructions = genericMap.stream().map(i -> {
+                        Map<String, Map> m = CollectionUtils.castMap(i, String.class, Map.class);
+                        var raw = m.entrySet().stream().findFirst().get();
+                        return TextInstructionFactory.createInstruction(
+                            raw.getKey(),
+                            CollectionUtils.castMap(raw.getValue(), String.class, Object.class)
+                        );
+                    }).collect(Collectors.toList());
+
+                    return new LoadUnstructuredInstruction(loadParameters.target, loadParameters.files, loadParameters.metadataColumns, instructions);
+                }
+                catch (RuntimeException ex) {
+                    throw new IllegalArgumentException("Incorrect argument types for loadUnstructured instruction.");
+                }
             }
             case "rename": {
                 Object sourceObj = args.get("source");
