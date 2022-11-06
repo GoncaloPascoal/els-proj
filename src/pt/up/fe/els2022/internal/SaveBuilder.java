@@ -6,7 +6,7 @@ import pt.up.fe.els2022.instructions.SaveInstruction;
 import java.util.Collections;
 import java.util.List;
 
-public class SaveBuilder extends InstructionBuilder {
+public class SaveBuilder extends InstructionBuilder<Instruction> {
     private String source;
     private String path;
     private List<String> columns = Collections.emptyList();

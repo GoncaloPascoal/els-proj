@@ -1,5 +1,6 @@
 package pt.up.fe.els2022.internal;
 
+import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.model.Program;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProgramBuilder {
-    private final List<InstructionBuilder> builders;
+    private final List<InstructionBuilder<Instruction>> builders;
 
     public ProgramBuilder() {
         builders = new ArrayList<>();

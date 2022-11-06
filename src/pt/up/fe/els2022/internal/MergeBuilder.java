@@ -5,7 +5,7 @@ import java.util.List;
 import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.instructions.MergeInstruction;
 
-public class MergeBuilder extends InstructionBuilder {
+public class MergeBuilder extends InstructionBuilder<Instruction> {
     private List<String> tables;
     private String target;
 

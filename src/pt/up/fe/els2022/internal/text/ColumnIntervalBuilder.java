@@ -6,12 +6,17 @@ import java.util.Map;
 import pt.up.fe.els2022.adapters.Interval;
 import pt.up.fe.els2022.instructions.text.ColumnIntervalInstruction;
 import pt.up.fe.els2022.instructions.text.TextInstruction;
+import pt.up.fe.els2022.internal.LoadUnstructuredBuilder;
 
 public class ColumnIntervalBuilder extends TextInstructionBuilder {
     private List<Interval> lines;
     private Map<String, Interval> columnIntervals;
-    private boolean stripWhitespace = true;
-    
+    private Boolean stripWhitespace;
+
+    public ColumnIntervalBuilder(LoadUnstructuredBuilder parent) {
+        super(parent);
+    }
+
     public ColumnIntervalBuilder withLines(List<Interval> lines) {
         this.lines = lines;
         return this;
@@ -21,8 +26,8 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
         this.columnIntervals = columnIntervals;
         return this;
     }
-    
-    public ColumnIntervalBuilder withStripWhitespace(boolean stripWhitespace) {
+
+    public ColumnIntervalBuilder withStripWhitespace(Boolean stripWhitespace) {
         this.stripWhitespace = stripWhitespace;
         return this;
     }

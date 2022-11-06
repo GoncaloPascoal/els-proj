@@ -1,13 +1,11 @@
 package pt.up.fe.els2022.internal;
 
-import pt.up.fe.els2022.instructions.Instruction;
-
-public abstract class InstructionBuilder {
+public abstract class InstructionBuilder<T> {
     protected abstract void validate();
 
-    protected abstract Instruction createUnsafe();
+    protected abstract T createUnsafe();
 
-    public Instruction create() {
+    public T create() {
         validate();
         return createUnsafe();
     }
