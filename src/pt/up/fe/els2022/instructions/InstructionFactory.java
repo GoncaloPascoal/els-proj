@@ -60,21 +60,21 @@ public class InstructionFactory {
         switch (type) {
             case "loadStructured": {
                 LoadParameters loadParameters = parseLoadParameters(args);
-                Object pathObj = args.get("path");
+                Object pathsObj = args.get("path");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
 
-                if (pathObj == null) {
+                if (pathsObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for loadStructured instruction.");
                 }
 
-                if (!(pathObj instanceof String && (columnsObj == null || columnsObj instanceof List<?>))) {
+                if (!(pathsObj instanceof List<?> && (columnsObj == null || columnsObj instanceof List<?>))) {
                     throw new IllegalArgumentException("Incorrect argument types for loadStructured instruction.");
                 }
 
                 try {
-                    String key = (String) pathObj;
+                    List<String> paths = SpecsCollections.cast((List<?>) pathsObj, String.class);
                     List<String> columns = columnsObj == null ? null : SpecsCollections.cast((List<?>) columnsObj, String.class);
-                    return new LoadStructuredInstruction(loadParameters.target, loadParameters.files, loadParameters.metadataColumns, key, columns);
+                    return new LoadStructuredInstruction(loadParameters.target, loadParameters.files, loadParameters.metadataColumns, paths, columns);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for loadStructured instruction.");

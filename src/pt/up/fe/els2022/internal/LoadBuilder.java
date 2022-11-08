@@ -3,6 +3,7 @@ package pt.up.fe.els2022.internal;
 import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.model.MetadataType;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,11 @@ public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionB
 
     public T withFilePaths(List<String> filePaths) {
         this.filePaths = filePaths;
+        return thisSubclass();
+    }
+
+    public T withFilePaths(String... filePaths) {
+        this.filePaths = Arrays.asList(filePaths);
         return thisSubclass();
     }
 

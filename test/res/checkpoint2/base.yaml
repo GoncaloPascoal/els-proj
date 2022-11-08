@@ -2,21 +2,16 @@
     target: t1
     files:
       - test/res/checkpoint2/data/vitis-report.xml
-    path: //AreaEstimates/Resources
+    path: [//AreaEstimates/Resources]
     metadataColumns:
       Folder: directory
 - loadStructured:
     target: t2
     files:
       - test/res/checkpoint2/data/decision_tree.json
-    path: /
-- loadStructured:
-    target: t3
-    files:
-      - test/res/checkpoint2/data/decision_tree.json
-    path: /params
+    path: [/, /params]
 - loadUnstructured:
-    target: t4
+    target: t3
     files:
       - test/res/checkpoint2/data/gprof.txt
     instructions:
@@ -26,7 +21,7 @@
             HighestPercentage: [1, 7]
             HighestName: 55
 - merge:
-    tables: [t1, t2, t3, t4]
+    tables: [t1, t2, t3]
 - save:
     source: t1
     file: out/base.csv

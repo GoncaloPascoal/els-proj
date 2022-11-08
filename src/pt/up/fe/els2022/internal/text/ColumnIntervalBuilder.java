@@ -1,5 +1,6 @@
 package pt.up.fe.els2022.internal.text;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,11 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
 
     public ColumnIntervalBuilder withLines(List<Interval> lines) {
         this.lines = lines;
+        return this;
+    }
+
+    public ColumnIntervalBuilder withLines(Interval... lines) {
+        this.lines = Arrays.asList(lines);
         return this;
     }
 

@@ -19,8 +19,8 @@ import com.google.gson.JsonParser;
 import pt.up.fe.els2022.model.Table;
 
 public class JsonAdapter extends StructuredAdapter {
-    public JsonAdapter(String path, List<String> columns) {
-        super(path, columns);
+    public JsonAdapter(List<String> paths, List<String> columns) {
+        super(paths, columns);
     }
 
     private JsonElement findByKey(JsonElement current, List<PathFragment> fragments, int fragmentIdx) {
@@ -49,7 +49,7 @@ public class JsonAdapter extends StructuredAdapter {
         return null;
     }
 
-    private List<PathFragment> splitPath() {
+    private List<PathFragment> splitPath(String path) {
         List<PathFragment> fragments = new ArrayList<>();
 
         String[] doubleSlash = path.split("//");
@@ -75,43 +75,45 @@ public class JsonAdapter extends StructuredAdapter {
 
         try {
             for (File file : files) {
-                String contents = Files.readString(file.toPath());
-                JsonElement root = JsonParser.parseString(contents);
-
-                JsonElement element = root;
-                if (!path.equals("/")) {
-                    List<PathFragment> fragments = splitPath();
-                    element = findByKey(root, fragments, 0);
-                }
-
-                if (element == null) {
-                    throw new RuntimeException("Could not find an element that matches the specified path: " + path +
-                            "in file " + file.getName() + ".");
-                }
-
-                JsonObject obj = element.getAsJsonObject();
-
-                if (columns.isEmpty()) {
-                    // Get all key-value pairs (with primitive values) in object
-                    for (Entry<String, JsonElement> entry : obj.entrySet()) {
-                        String colName = entry.getKey();
-                        JsonElement colValue = entry.getValue();
-
-                        if (colValue.isJsonPrimitive() || colValue.isJsonNull()) {
+                for (String path : paths) {
+                    String contents = Files.readString(file.toPath());
+                    JsonElement root = JsonParser.parseString(contents);
+    
+                    JsonElement element = root;
+                    if (!path.equals("/")) {
+                        List<PathFragment> fragments = splitPath(path);
+                        element = findByKey(root, fragments, 0);
+                    }
+    
+                    if (element == null) {
+                        throw new RuntimeException("Could not find an element that matches the specified path: " + path +
+                                "in file " + file.getName() + ".");
+                    }
+    
+                    JsonObject obj = element.getAsJsonObject();
+    
+                    if (columns.isEmpty()) {
+                        // Get all key-value pairs (with primitive values) in object
+                        for (Entry<String, JsonElement> entry : obj.entrySet()) {
+                            String colName = entry.getKey();
+                            JsonElement colValue = entry.getValue();
+    
+                            if (colValue.isJsonPrimitive() || colValue.isJsonNull()) {
+                                rows.putIfAbsent(colName, new ArrayList<>());
+                                rows.get(colName).add(colValue.isJsonPrimitive() ? colValue.getAsString() : "null");
+                            }
+                        }
+                    }
+                    else {
+                        // Get specific key-value pairs in a particular order
+                        for (String colName : columns) {
+                            JsonElement colValue = obj.get(colName);
+                            if (colValue == null || !colValue.isJsonPrimitive() || !colValue.isJsonNull()) {
+                                throw new RuntimeException("Column " + colName + " does not exist or does not correspond to a primitive value.");
+                            }
                             rows.putIfAbsent(colName, new ArrayList<>());
                             rows.get(colName).add(colValue.isJsonPrimitive() ? colValue.getAsString() : "null");
                         }
-                    }
-                }
-                else {
-                    // Get specific key-value pairs in a particular order
-                    for (String colName : columns) {
-                        JsonElement colValue = obj.get(colName);
-                        if (colValue == null || !colValue.isJsonPrimitive() || !colValue.isJsonNull()) {
-                            throw new RuntimeException("Column " + colName + " does not exist or does not correspond to a primitive value.");
-                        }
-                        rows.putIfAbsent(colName, new ArrayList<>());
-                        rows.get(colName).add(colValue.isJsonPrimitive() ? colValue.getAsString() : "null");
                     }
                 }
             }

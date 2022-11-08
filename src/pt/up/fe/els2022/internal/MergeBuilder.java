@@ -1,5 +1,6 @@
 package pt.up.fe.els2022.internal;
 
+import java.util.Arrays;
 import java.util.List;
 
 import pt.up.fe.els2022.instructions.Instruction;
@@ -11,6 +12,11 @@ public class MergeBuilder extends InstructionBuilder<Instruction> {
 
     public MergeBuilder withTables(List<String> tables) {
         this.tables = tables;
+        return this;
+    }
+
+    public MergeBuilder withTables(String... tables) {
+        this.tables = Arrays.asList(tables);
         return this;
     }
 
