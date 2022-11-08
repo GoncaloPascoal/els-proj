@@ -8,43 +8,43 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProgramBuilder {
-    private final List<InstructionBuilder<Instruction>> builders;
+    private final List<Builder<Instruction>> builders;
 
     public ProgramBuilder() {
         builders = new ArrayList<>();
     }
 
     public LoadStructuredBuilder loadStructured() {
-        LoadStructuredBuilder builder = new LoadStructuredBuilder();
+        LoadStructuredBuilder builder = new LoadStructuredBuilder(this);
         builders.add(builder);
         return builder;
     }
 
     public LoadUnstructuredBuilder loadUnstructured() {
-        LoadUnstructuredBuilder builder = new LoadUnstructuredBuilder();
+        LoadUnstructuredBuilder builder = new LoadUnstructuredBuilder(this);
         builders.add(builder);
         return builder;
     }
 
     public RenameBuilder rename() {
-        RenameBuilder builder = new RenameBuilder();
+        RenameBuilder builder = new RenameBuilder(this);
         builders.add(builder);
         return builder;
     }
 
     public MergeBuilder merge() {
-        MergeBuilder builder = new MergeBuilder();
+        MergeBuilder builder = new MergeBuilder(this);
         builders.add(builder);
         return builder;
     }
 
     public SaveBuilder save() {
-        SaveBuilder builder = new SaveBuilder();
+        SaveBuilder builder = new SaveBuilder(this);
         builders.add(builder);
         return builder;
     }
 
     public Program create() {
-        return new Program(builders.stream().map(InstructionBuilder::create).collect(Collectors.toList()));
+        return new Program(builders.stream().map(Builder::create).collect(Collectors.toList()));
     }
 }

@@ -1,12 +1,15 @@
 package pt.up.fe.els2022.internal;
 
-public abstract class InstructionBuilder<T> {
-    protected abstract void validate();
+import pt.up.fe.els2022.instructions.Instruction;
 
-    protected abstract T createUnsafe();
+public abstract class InstructionBuilder extends Builder<Instruction> {
+    private final ProgramBuilder parent;
 
-    public T create() {
-        validate();
-        return createUnsafe();
+    public InstructionBuilder(ProgramBuilder parent) {
+        this.parent = parent;
+    }
+
+    public ProgramBuilder close() {
+        return parent;
     }
 }

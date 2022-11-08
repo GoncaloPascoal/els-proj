@@ -8,10 +8,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionBuilder<Instruction> {
+public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionBuilder {
     protected String target;
     protected List<String> filePaths;
     protected Map<String, MetadataType> metadataColumns = Collections.emptyMap();
+
+    public LoadBuilder(ProgramBuilder parent) {
+        super(parent);
+    }
 
     public T withTarget(String target) {
         this.target = target;

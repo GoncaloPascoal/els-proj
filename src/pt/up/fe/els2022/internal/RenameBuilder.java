@@ -5,9 +5,13 @@ import pt.up.fe.els2022.instructions.RenameInstruction;
 
 import java.util.Map;
 
-public class RenameBuilder extends InstructionBuilder<Instruction> {
+public class RenameBuilder extends InstructionBuilder {
     private String source;
     private Map<String, String> mapping;
+
+    public RenameBuilder(ProgramBuilder parent) {
+        super(parent);
+    }
 
     public RenameBuilder withSource(String source) {
         this.source = source;

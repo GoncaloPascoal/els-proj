@@ -13,7 +13,8 @@ import pt.up.fe.els2022.internal.text.TextInstructionBuilder;
 public class LoadUnstructuredBuilder extends LoadBuilder<LoadUnstructuredBuilder> {
     private final List<TextInstructionBuilder> builders;
 
-    public LoadUnstructuredBuilder() {
+    public LoadUnstructuredBuilder(ProgramBuilder parent) {
+        super(parent);
         builders = new ArrayList<>();
     }
 
@@ -31,7 +32,7 @@ public class LoadUnstructuredBuilder extends LoadBuilder<LoadUnstructuredBuilder
 
     @Override
     protected Instruction createUnsafe() {
-        var textInstructions = builders.stream().map(InstructionBuilder::create).collect(Collectors.toList());
+        var textInstructions = builders.stream().map(Builder::create).collect(Collectors.toList());
         return new LoadUnstructuredInstruction(target, filePaths, metadataColumns,textInstructions);
     }
 }

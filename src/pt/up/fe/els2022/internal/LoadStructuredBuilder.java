@@ -11,6 +11,10 @@ public class LoadStructuredBuilder extends LoadBuilder<LoadStructuredBuilder> {
     private List<String> paths;
     private List<String> columns = Collections.emptyList();
 
+    public LoadStructuredBuilder(ProgramBuilder parent) {
+        super(parent);
+    }
+
     public LoadStructuredBuilder withPaths(List<String> paths) {
         this.paths = paths;
         return this;
