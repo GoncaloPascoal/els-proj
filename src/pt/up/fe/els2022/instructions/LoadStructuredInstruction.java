@@ -1,6 +1,7 @@
 package pt.up.fe.els2022.instructions;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,14 @@ public class LoadStructuredInstruction extends LoadInstruction {
 
         if (paths.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one path.");
+        }
+
+        if (columns == null) {
+            columns = Collections.emptyList();
+        }
+
+        if (paths.size() >= 2 && !columns.isEmpty()) {
+            throw new IllegalArgumentException("Column specification for multiple paths is not supported.");
         }
 
         this.paths = paths;

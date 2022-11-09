@@ -3,6 +3,7 @@ package pt.up.fe.els2022.instructions;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,6 +21,11 @@ public class SaveInstruction implements Instruction {
     public SaveInstruction(String source, String path, List<String> columns) {
         this.source = source;
         this.path = path;
+
+        if (columns == null) {
+            columns = Collections.emptyList();
+        }
+
         this.columns = columns;
     }
 

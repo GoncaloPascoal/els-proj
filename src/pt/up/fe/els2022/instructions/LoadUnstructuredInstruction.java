@@ -16,6 +16,11 @@ public class LoadUnstructuredInstruction extends LoadInstruction {
     public LoadUnstructuredInstruction(String target, List<String> filePaths,
             Map<String, MetadataType> metadataColumns, List<TextInstruction> textInstructions) {
         super(target, filePaths, metadataColumns);
+
+        if (textInstructions.isEmpty()) {
+            throw new IllegalArgumentException("Must specify at least one text instruction.");
+        }
+
         this.textInstructions = textInstructions;
     }
 

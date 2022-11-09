@@ -3,14 +3,13 @@ package pt.up.fe.els2022.internal;
 import pt.up.fe.els2022.model.MetadataType;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionBuilder {
     protected String target;
     protected List<String> filePaths;
-    protected Map<String, MetadataType> metadataColumns = Collections.emptyMap();
+    protected Map<String, MetadataType> metadataColumns;
 
     public LoadBuilder(ProgramBuilder parent) {
         super(parent);

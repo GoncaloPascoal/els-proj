@@ -3,13 +3,12 @@ package pt.up.fe.els2022.internal;
 import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.instructions.SaveInstruction;
 
-import java.util.Collections;
 import java.util.List;
 
 public class SaveBuilder extends InstructionBuilder {
     private String source;
     private String path;
-    private List<String> columns = Collections.emptyList();
+    private List<String> columns;
 
     public SaveBuilder(ProgramBuilder parent) {
         super(parent);

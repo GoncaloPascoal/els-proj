@@ -4,12 +4,11 @@ import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.instructions.LoadStructuredInstruction;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class LoadStructuredBuilder extends LoadBuilder<LoadStructuredBuilder> {
     private List<String> paths;
-    private List<String> columns = Collections.emptyList();
+    private List<String> columns;
 
     public LoadStructuredBuilder(ProgramBuilder parent) {
         super(parent);

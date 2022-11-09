@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,10 @@ public abstract class LoadInstruction implements Instruction {
         }
         if (files.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one source file.");
+        }
+
+        if (metadataColumns == null) {
+            metadataColumns = Collections.emptyMap();
         }
 
         this.metadataColumns = metadataColumns;
