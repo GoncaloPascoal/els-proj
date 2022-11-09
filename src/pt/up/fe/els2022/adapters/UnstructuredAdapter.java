@@ -6,10 +6,10 @@ import java.util.List;
 import pt.up.fe.els2022.instructions.text.TextInstruction;
 import pt.up.fe.els2022.model.Table;
 
-public class TxtAdapter extends Adapter {
+public class UnstructuredAdapter extends Adapter {
     private final List<TextInstruction> textInstructions;
 
-    public TxtAdapter(List<TextInstruction> textInstructions) {
+    public UnstructuredAdapter(List<TextInstruction> textInstructions) {
         this.textInstructions = textInstructions;
     }
 

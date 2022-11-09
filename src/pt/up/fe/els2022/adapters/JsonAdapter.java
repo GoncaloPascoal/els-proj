@@ -23,7 +23,7 @@ public class JsonAdapter extends StructuredAdapter {
         super(paths, columns);
     }
 
-    private JsonElement findByKey(JsonElement current, List<PathFragment> fragments, int fragmentIdx) {
+    private JsonElement findByPath(JsonElement current, List<PathFragment> fragments, int fragmentIdx) {
         PathFragment fragment = fragments.get(fragmentIdx);
 
         if (current.isJsonObject()) {
@@ -34,13 +34,13 @@ public class JsonAdapter extends StructuredAdapter {
                 if (fragmentIdx == fragments.size() - 1) {
                     return element;
                 }
-                element = findByKey(element, fragments, fragmentIdx + 1);
+                element = findByPath(element, fragments, fragmentIdx + 1);
                 if (element != null) return element;
             }
 
             if (!fragment.isDirectChild()) {
                 for (Entry<String, JsonElement> entry : currentObj.entrySet()) {
-                    element = findByKey(entry.getValue(), fragments, fragmentIdx);
+                    element = findByPath(entry.getValue(), fragments, fragmentIdx);
                     if (element != null) return element;
                 }
             }
@@ -82,7 +82,7 @@ public class JsonAdapter extends StructuredAdapter {
                     JsonElement element = root;
                     if (!path.equals("/")) {
                         List<PathFragment> fragments = splitPath(path);
-                        element = findByKey(root, fragments, 0);
+                        element = findByPath(root, fragments, 0);
                     }
     
                     if (element == null) {
