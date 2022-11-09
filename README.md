@@ -135,10 +135,13 @@ Since the first checkpoint, we have introduced support for extracting and manipu
 
 #### Text Instructions
 
-- TODO
-- One of the parameters of the `loadUnstructured` instruction is a list of **text instructions**, which have a similar interface to the top-level instructions but are specifically designed to extract tabular data from unstructured text files.
-- The `columnInterval` instruction extracts data from a file in a table-like structure.
-- The `regexLineDelimiter` instruction extracts data from a file in a key-value structure.
+- In order to cope with the difficulty of extracting tables from an unstructured file, we implemented different **text instructions**, which have a similar interface to the top-level instructions but are specifically designed to extract tabular data from unstructured text files.
+- A list of these **text instructions** is used as one of the parameters of the `loadUnstructured` instruction.
+- The `columnInterval` instruction extracts tabular data from a file.
+  - When extracting simultaneously from multiple lines, the values in the columns need to be aligned.
+- The `regexLineDelimiter` instruction extracts data from a file in a key-value fashion.
+  - Firstly, it selects the file lines which match one of the RegEx expressions in the `lines` parameter.
+  - Afterwards, each of these lines is split based on the RegEx expression in the `delimiter` parameter, in key (to the left) and value (to the right). This expression is the same for all lines.
 
 #### Program State
 
