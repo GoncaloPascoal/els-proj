@@ -137,11 +137,20 @@ Since the first checkpoint, we have introduced support for extracting and manipu
 
 - In order to cope with the difficulty of extracting tables from an unstructured file, we implemented different **text instructions**, which have a similar interface to the top-level instructions but are specifically designed to extract tabular data from unstructured text files.
 - A list of these **text instructions** is used as one of the parameters of the `loadUnstructured` instruction.
-- The `columnInterval` instruction extracts tabular data from a file.
-  - When extracting simultaneously from multiple lines, the values in the columns need to be aligned.
-- The `regexLineDelimiter` instruction extracts data from a file in a key-value fashion.
-  - Firstly, it selects the file lines which match one of the RegEx expressions in the `lines` parameter.
-  - Afterwards, each of these lines is split based on the RegEx expression in the `delimiter` parameter, in key (to the left) and value (to the right). This expression is the same for all lines.
+- The `columnInterval` instruction can extract data that is organized in a columnar structure. When extracting data from multiple lines, the values in each column have to be aligned. The following listing contains an example structure that this instruction is well suited to tackle:
+  ```
+  Run    Time    Memory    Objective Function
+  1      2.03s   12MB      23.56
+  2      1.68s   14MB      21.12
+  3      2.11s   11MB      26.12
+  ```
+- The `regexLineDelimiter` instruction can extract data that is organized in a key-value fashion. It first selects the file lines that match one of the RegEx expressions in the `lines` parameter. Afterwards, each of these lines is split based on the `delimiter` parameter, into key (to the left) and value (to the right). The delimiter expression is the same for all lines. The following listing shows an example structure where this instruction would be adequate:
+  ```
+  Identifier  =  P-SE3Z
+  Category    =       C
+  Price       =  $15.99
+  Weight      =   2.7kg
+  ```
 
 #### Program State
 
@@ -183,8 +192,8 @@ Extracts a table from a file or set of unstructuredfiles. Inherits the `load` in
 - `instructions`: list of text instructions that specify how to extract the table.
   - **Possible Instructions:**
   - `columnInterval`:
-    - `lines`: list of file lines from which to extract the columns. The first line of a file is line 1.
-    - `columnIntervals`: column names and corresponding position in the extracted line. The first column of a line is column 1.
+    - `lines`: file lines from which to extract the columns. These can be specified as single lines (`12`) or line intervals (`[15, 20]`) The first line of a file is line 1.
+    - `columnIntervals`: mapping of column names to their position in the extracted line. For example, the interval `[5, 20]` specifies that the value for that column spans file columns 5 through 20. The first column of a line is column 1.
     - `stripWhitespace` (optional): whether or not the whitespace surrounding the extracted information should be removed. Defaults to `true`.
   - `regexLineDelimiter`:
     - `linePatterns`: RegEx patterns corresponding to the beginning of the lines containing the data to extract.
