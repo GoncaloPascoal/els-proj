@@ -2,14 +2,14 @@
     target: t1
     files:
       - test/res/checkpoint2/data/vitis-report.xml
-    path: [//AreaEstimates/Resources]
+    paths: [//AreaEstimates/Resources]
     metadataColumns:
       Folder: directory
 - loadStructured:
     target: t2
     files:
       - test/res/checkpoint2/data/decision_tree.json
-    path: [/, /params]
+    paths: [/, /params]
 - loadUnstructured:
     target: t3
     files:

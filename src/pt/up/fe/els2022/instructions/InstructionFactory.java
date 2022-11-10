@@ -60,7 +60,7 @@ public class InstructionFactory {
         switch (type) {
             case "loadStructured": {
                 LoadParameters loadParameters = parseLoadParameters(args);
-                Object pathsObj = args.get("path");
+                Object pathsObj = args.get("paths");
                 Object columnsObj = args.getOrDefault("columns", Collections.emptyList());
 
                 if (pathsObj == null) {
