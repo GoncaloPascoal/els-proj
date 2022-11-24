@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<package
+			uri = "http://www.up.pt/fe/els2022/tabular/Tabular"
+			class = "pt.up.fe.els2022.tabular.tabular.TabularPackage"
+			genModel = "model/generated/Tabular.genmodel" />
+	</extension>
+</plugin>

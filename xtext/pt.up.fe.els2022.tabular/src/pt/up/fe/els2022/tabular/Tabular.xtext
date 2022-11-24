@@ -3,7 +3,21 @@ grammar pt.up.fe.els2022.tabular.Tabular with org.eclipse.xtext.common.Terminals
 generate tabular "http://www.up.pt/fe/els2022/tabular/Tabular"
 
 Model:
-	greetings+=Greeting*;
-	
-Greeting:
-	'Hello' name=ID '!';
+	(instructions+=Instruction)+;
+
+Instruction:
+	Merge
+;
+
+Merge:
+	'merge' '{'
+		(mergeParams+=MergeParam)*
+	'}'
+;
+
+MergeParam:
+	('tables' | 'target') LE
+;
+
+// Line ending
+terminal LE: ('\r'? '\n')?;

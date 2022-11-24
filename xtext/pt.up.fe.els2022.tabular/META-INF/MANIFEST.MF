@@ -8,5 +8,22 @@ Bundle-SymbolicName: pt.up.fe.els2022.tabular; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase,
- org.eclipse.equinox.common;bundle-version="3.5.0"
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: pt.up.fe.els2022.tabular.serializer,
+ pt.up.fe.els2022.tabular.services,
+ pt.up.fe.els2022.tabular.tabular,
+ pt.up.fe.els2022.tabular.parser.antlr.internal,
+ pt.up.fe.els2022.tabular.tabular.util,
+ pt.up.fe.els2022.tabular.tabular.impl,
+ pt.up.fe.els2022.tabular.scoping,
+ pt.up.fe.els2022.tabular,
+ pt.up.fe.els2022.tabular.parser.antlr,
+ pt.up.fe.els2022.tabular.generator,
+ pt.up.fe.els2022.tabular.validation
+Import-Package: org.apache.log4j

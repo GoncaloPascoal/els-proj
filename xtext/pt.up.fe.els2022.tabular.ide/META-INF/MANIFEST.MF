@@ -8,5 +8,8 @@ Bundle-SymbolicName: pt.up.fe.els2022.tabular.ide; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: pt.up.fe.els2022.tabular,
  org.eclipse.xtext.ide,
- org.eclipse.xtext.xbase.ide
+ org.eclipse.xtext.xbase.ide,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: pt.up.fe.els2022.tabular.ide.contentassist.antlr.internal,
+ pt.up.fe.els2022.tabular.ide.contentassist.antlr

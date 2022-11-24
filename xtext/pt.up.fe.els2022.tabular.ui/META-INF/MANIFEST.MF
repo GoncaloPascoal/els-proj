@@ -12,6 +12,13 @@ Require-Bundle: pt.up.fe.els2022.tabular,
  org.eclipse.xtext.ui.shared,
  org.eclipse.xtext.ui.codetemplates.ui,
  org.eclipse.ui.editors;bundle-version="3.5.0",
- org.eclipse.ui.ide;bundle-version="3.5.0"
+ org.eclipse.ui.ide;bundle-version="3.5.0",
+ org.eclipse.ui,
+ org.eclipse.compare,
+ org.eclipse.xtext.builder
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: pt.up.fe.els2022.tabular.ui.quickfix,
+ pt.up.fe.els2022.tabular.ui.contentassist,
+ pt.up.fe.els2022.tabular.ui.internal
+Bundle-Activator: pt.up.fe.els2022.tabular.ui.internal.TabularActivator
