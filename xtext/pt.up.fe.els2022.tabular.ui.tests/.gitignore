@@ -1,4 +1,6 @@
 /test-bin/
-src/
-src-gen/
-xtend-gen/
+src/**
+src-gen/**
+xtend-gen/**
+
+!.gitkeep
