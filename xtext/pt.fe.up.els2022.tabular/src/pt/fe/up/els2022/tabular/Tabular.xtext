@@ -1,9 +1,0 @@
-grammar pt.fe.up.els2022.tabular.Tabular with org.eclipse.xtext.common.Terminals
-
-generate tabular "http://www.fe.pt/up/els2022/tabular/Tabular"
-
-Model:
-	greetings+=Greeting*;
-	
-Greeting:
-	'Hello' name=ID '!';
