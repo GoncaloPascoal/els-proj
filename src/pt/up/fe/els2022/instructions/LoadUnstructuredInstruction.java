@@ -14,8 +14,9 @@ public class LoadUnstructuredInstruction extends LoadInstruction {
     private final List<TextInstruction> textInstructions;
 
     public LoadUnstructuredInstruction(String target, List<String> filePaths,
-            Map<String, MetadataType> metadataColumns, List<TextInstruction> textInstructions) {
-        super(target, filePaths, metadataColumns);
+            Map<String, MetadataType> metadataColumns, String columnSuffix,
+            List<TextInstruction> textInstructions) {
+        super(target, filePaths, metadataColumns, columnSuffix);
 
         if (textInstructions.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one text instruction.");

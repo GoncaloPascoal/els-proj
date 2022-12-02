@@ -10,6 +10,7 @@ public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionB
     protected String target;
     protected List<String> filePaths;
     protected Map<String, MetadataType> metadataColumns;
+    protected String columnSuffix;
 
     public LoadBuilder(ProgramBuilder parent) {
         super(parent);
@@ -32,6 +33,11 @@ public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionB
 
     public T withMetadataColumns(Map<String, MetadataType> metadataColumns) {
         this.metadataColumns = metadataColumns;
+        return thisSubclass();
+    }
+
+    public T withColumnSuffix(String columnSuffix) {
+        this.columnSuffix = columnSuffix;
         return thisSubclass();
     }
 

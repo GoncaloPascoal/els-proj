@@ -16,11 +16,13 @@ public class InstructionFactory {
         public String target;
         public List<String> files;
         public Map<String, MetadataType> metadataColumns;
+        public String columnSuffix;
 
-        public LoadParameters(String target, List<String> files, Map<String, MetadataType> metadataColumns) {
+        public LoadParameters(String target, List<String> files, Map<String, MetadataType> metadataColumns, String columnSuffix) {
             this.target = target;
             this.files = files;
             this.metadataColumns = metadataColumns;
+            this.columnSuffix = columnSuffix;
         }
     }
 
@@ -28,6 +30,7 @@ public class InstructionFactory {
         Object targetObj = args.get("target");
         Object filesObj = args.get("files");
         Object metadataColumnsObj = args.getOrDefault("metadataColumns", Collections.emptyMap());
+        Object columnSuffixObj = args.get("columnSuffix");
 
         if (targetObj == null || filesObj == null) {
             throw new IllegalArgumentException("Missing required arguments for load instruction.");
@@ -48,8 +51,9 @@ public class InstructionFactory {
                             throw new IllegalArgumentException(e.getValue() + " is not a valid type of metadata.");
                         return mdType;
                     }));
+            String columnSuffix = columnSuffixObj != null ? (String) columnSuffixObj : null;
 
-            return new LoadParameters(target, files, metadataColumns);
+            return new LoadParameters(target, files, metadataColumns, columnSuffix);
         }
         catch (RuntimeException ex) {
             throw new IllegalArgumentException("Incorrect argument types for load instruction.");
@@ -74,7 +78,9 @@ public class InstructionFactory {
                 try {
                     List<String> paths = SpecsCollections.cast((List<?>) pathsObj, String.class);
                     List<String> columns = columnsObj == null ? null : SpecsCollections.cast((List<?>) columnsObj, String.class);
-                    return new LoadStructuredInstruction(loadParameters.target, loadParameters.files, loadParameters.metadataColumns, paths, columns);
+                    return new LoadStructuredInstruction(loadParameters.target,
+                        loadParameters.files, loadParameters.metadataColumns,
+                        loadParameters.columnSuffix, paths, columns);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for loadStructured instruction.");
@@ -103,7 +109,9 @@ public class InstructionFactory {
                         );
                     }).collect(Collectors.toList());
 
-                    return new LoadUnstructuredInstruction(loadParameters.target, loadParameters.files, loadParameters.metadataColumns, instructions);
+                    return new LoadUnstructuredInstruction(loadParameters.target,
+                        loadParameters.files, loadParameters.metadataColumns,
+                        loadParameters.columnSuffix, instructions);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for loadUnstructured instruction.");

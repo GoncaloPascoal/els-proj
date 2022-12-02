@@ -16,9 +16,10 @@ public class LoadStructuredInstruction extends LoadInstruction {
     private final List<String> paths;
     private final List<String> columns;
 
-    public LoadStructuredInstruction(String target, List<String> filePaths, Map<String, MetadataType> metadataColumns,
+    public LoadStructuredInstruction(String target, List<String> filePaths,
+            Map<String, MetadataType> metadataColumns, String columnSuffix,
             List<String> paths, List<String> columns) {
-        super(target, filePaths, metadataColumns);
+        super(target, filePaths, metadataColumns, columnSuffix);
 
         if (paths.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one path.");

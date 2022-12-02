@@ -23,8 +23,9 @@ public abstract class LoadInstruction implements Instruction {
     protected final String target;
     protected final List<File> files;
     protected final Map<String, MetadataType> metadataColumns;
+    protected final String columnSuffix;
 
-    public LoadInstruction(String target, List<String> filePaths, Map<String, MetadataType> metadataColumns) {
+    public LoadInstruction(String target, List<String> filePaths, Map<String, MetadataType> metadataColumns, String columnSuffix) {
         this.target = target;
 
         files = new ArrayList<>();
@@ -44,8 +45,12 @@ public abstract class LoadInstruction implements Instruction {
         if (metadataColumns == null) {
             metadataColumns = Collections.emptyMap();
         }
-
         this.metadataColumns = metadataColumns;
+
+        if (columnSuffix == null) {
+            columnSuffix = "";
+        }
+        this.columnSuffix = columnSuffix;
     }
 
     protected abstract Adapter createAdapter() throws FileNotFoundException, UnsupportedFileExtensionException;
@@ -61,7 +66,12 @@ public abstract class LoadInstruction implements Instruction {
             throw new RuntimeException(e);
         }
 
-        newTable.merge(adapter.extractTable(files));
+        Table dataTable = adapter.extractTable(files);
+        for (String colName : dataTable.getColumnNames()) {
+            dataTable.renameColumn(colName, colName + columnSuffix);
+        }
+
+        newTable.merge(dataTable);
         state.getOrCreateTable(target).concatenate(newTable);
     }
 }
