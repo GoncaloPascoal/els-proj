@@ -33,6 +33,7 @@ public class LoadUnstructuredBuilder extends LoadBuilder<LoadUnstructuredBuilder
     @Override
     protected Instruction createUnsafe() {
         var textInstructions = builders.stream().map(Builder::create).collect(Collectors.toList());
-        return new LoadUnstructuredInstruction(target, filePaths, metadataColumns,textInstructions);
+        return new LoadUnstructuredInstruction(target, filePaths,
+            metadataColumns, columnSuffix, textInstructions);
     }
 }

@@ -44,6 +44,7 @@ public class LoadStructuredBuilder extends LoadBuilder<LoadStructuredBuilder> {
 
     @Override
     protected Instruction createUnsafe() {
-        return new LoadStructuredInstruction(target, filePaths, metadataColumns, paths, columns);
+        return new LoadStructuredInstruction(target, filePaths, metadataColumns,
+            columnSuffix, paths, columns);
     }
 }

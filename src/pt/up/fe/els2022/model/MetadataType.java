@@ -9,7 +9,8 @@ public enum MetadataType {
     FILE_NAME("fileName", File::getName),
     FILE_PATH("filePath", File::getPath),
     ABSOLUTE_FILE_PATH("absoluteFilePath", File::getAbsolutePath),
-    DIRECTORY("directory", File::getParent);
+    DIRECTORY_NAME("directoryName", f -> f.getParentFile().getName()),
+    DIRECTORY_PATH("directoryPath", File::getParent);
 
     private final String id;
     private final Function<File, String> function;
