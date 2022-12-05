@@ -1,0 +1,29 @@
+- loadStructured:
+    target: t1
+    files:
+      - test/res/checkpoint3/data/[0-9]+/analysis.xml
+    paths: [//total//static]
+    metadataColumns:
+      dir: directoryName
+    columnSuffix: ' (Static)'
+- loadStructured:
+    target: t2
+    files:
+      - test/res/checkpoint3/data/[0-9]+/analysis.json
+    paths: [//total//dynamic]
+    columnSuffix: ' (Dynamic)'
+# - loadUnstructured:
+#     target: t3
+#     files:
+#       - test/res/checkpoint2/data/gprof.txt
+#     instructions:
+#       - columnInterval:
+#           lines: [6]
+#           columnIntervals:
+#             HighestPercentage: [1, 7]
+#             HighestName: 55
+- merge:
+    tables: [t1, t2]
+- save:
+    source: t1
+    file: out/base.csv
