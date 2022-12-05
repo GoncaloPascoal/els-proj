@@ -3,14 +3,14 @@ package pt.up.fe.els2022.instructions;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import pt.up.fe.els2022.adapters.Adapter;
 import pt.up.fe.els2022.model.MetadataType;
@@ -31,8 +31,8 @@ public abstract class LoadInstruction implements Instruction {
         files = new ArrayList<>();
         try {
             for (String path : filePaths) {
-                final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path);
-                Files.walkFileTree(Paths.get(""), new ListFileVisitor(files, matcher));
+                Pattern p = Pattern.compile(path);
+                Files.walkFileTree(Paths.get(""), new ListFileVisitor(files, p));
             }
         }
         catch (IOException e) {
@@ -67,7 +67,7 @@ public abstract class LoadInstruction implements Instruction {
         }
 
         Table dataTable = adapter.extractTable(files);
-        for (String colName : dataTable.getColumnNames()) {
+        for (String colName : Set.copyOf(dataTable.getColumnNames())) {
             dataTable.renameColumn(colName, colName + columnSuffix);
         }
 

@@ -83,7 +83,7 @@ public class InstructionFactory {
                         loadParameters.columnSuffix, paths, columns);
                 }
                 catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for loadStructured instruction.");
+                    throw new IllegalArgumentException("Incorrect argument types for loadStructured instruction: " + ex.getMessage());
                 }
             }
             case "loadUnstructured": {
@@ -114,7 +114,7 @@ public class InstructionFactory {
                         loadParameters.columnSuffix, instructions);
                 }
                 catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for loadUnstructured instruction.");
+                    throw new IllegalArgumentException("Incorrect argument types for loadUnstructured instruction: " + ex.getMessage());
                 }
             }
             case "rename": {
@@ -136,7 +136,7 @@ public class InstructionFactory {
                     return new RenameInstruction(source, mapping);
                 }
                 catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for rename instruction.");
+                    throw new IllegalArgumentException("Incorrect argument types for rename instruction: " + ex.getMessage());
                 }
             }
             case "merge": {
@@ -158,7 +158,7 @@ public class InstructionFactory {
                     return new MergeInstruction(tables, target);
                 }
                 catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for merge instruction.");
+                    throw new IllegalArgumentException("Incorrect argument types for merge instruction: " + ex.getMessage());
                 }
             }
             case "save": {
@@ -182,7 +182,7 @@ public class InstructionFactory {
                     return new SaveInstruction(source, file, columns);
                 }
                 catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for save instruction.");
+                    throw new IllegalArgumentException("Incorrect argument types for save instruction: " + ex.getMessage());
                 }
             }
             default:
