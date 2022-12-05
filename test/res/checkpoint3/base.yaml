@@ -24,6 +24,9 @@
 #             HighestName: 55
 - merge:
     tables: [t1, t2]
+- sort:
+    target: t1
+    column: dir
 - save:
     source: t1
     file: out/base.csv

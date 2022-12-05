@@ -185,6 +185,30 @@ public class InstructionFactory {
                     throw new IllegalArgumentException("Incorrect argument types for save instruction: " + ex.getMessage());
                 }
             }
+            case "sort": {
+                Object targetObj = args.get("target");
+                Object columnObj = args.get("column");
+                Object descendingObj = args.get("descending");
+
+                if (targetObj == null || columnObj == null) {
+                    throw new IllegalArgumentException("Missing required arguments for sort instruction.");
+                }
+
+                if (!(targetObj instanceof String && columnObj instanceof String && (descendingObj == null || descendingObj instanceof Boolean))) {
+                    throw new IllegalArgumentException("Incorrect argument types for sort instruction.");
+                }
+
+                try {
+                    String target = (String) targetObj;
+                    String column = (String) columnObj;
+                    Boolean descending = descendingObj == null ? null : (Boolean) descendingObj;
+
+                    return new SortInstruction(target, column, descending);
+                }
+                catch (RuntimeException ex) {
+                    throw new IllegalArgumentException("Incorrect argument types for sort instruction: " + ex.getMessage());
+                }
+            }
             default:
                 throw new IllegalArgumentException(type + " is not a valid instruction type.");
         }

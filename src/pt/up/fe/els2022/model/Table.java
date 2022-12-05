@@ -85,12 +85,31 @@ public class Table {
         if (column != null) data.put(index, newName, column);
     }
 
+    private List<String> getColumnUnsafe(String name) {
+        return data.get(name);
+    }
+
     public List<String> getColumn(String name) {
-        return Collections.unmodifiableList(data.get(name));
+        return Collections.unmodifiableList(getColumnUnsafe(name));
     }
 
     public Set<String> getColumnNames() {
         return Collections.unmodifiableSet(data.keySet());
+    }
+
+    public void replaceColumn(String name, List<String> newColumn) {
+        List<String> column = getColumnUnsafe(name);
+
+        if (column == null) {
+            throw new IllegalArgumentException("Column does not exist: " + name);
+        }
+
+        if (newColumn.size() != column.size()) {
+            // TODO: allow smaller columns, by filling them with nulls
+            throw new IllegalArgumentException("Columns must be the of same size.");
+        }
+
+        data.put(name, newColumn);
     }
 
     public Map<String, String> getRow(int index) {
