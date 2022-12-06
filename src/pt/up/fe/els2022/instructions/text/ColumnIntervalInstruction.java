@@ -18,9 +18,11 @@ public class ColumnIntervalInstruction implements TextInstruction {
     private final SortedSet<Integer> lines;
     private final Map<String, Interval> columnIntervals;
     private final boolean stripWhitespace;
+    private final String columnarFormat;
 
     public ColumnIntervalInstruction(List<Interval> lines,
-            Map<String, Interval> columnIntervals, Boolean stripWhitespace) {
+            Map<String, Interval> columnIntervals, Boolean stripWhitespace,
+            String columnarFormat) {
         this.lines = new TreeSet<>();
         lines.forEach(interval -> {
             int start = interval.getStart();
@@ -34,6 +36,8 @@ public class ColumnIntervalInstruction implements TextInstruction {
 
         if (stripWhitespace == null) stripWhitespace = true;
         this.stripWhitespace = stripWhitespace;
+
+        this.columnarFormat = columnarFormat;
     }
 
     @Override
@@ -42,6 +46,7 @@ public class ColumnIntervalInstruction implements TextInstruction {
 
         List<String> txtLines = LineStream.readLines(file);
 
+        int relativeLine = 1;
         for (int line : lines) {
             if (txtLines.size() <= line) {
                 throw new RuntimeException("Source file doesn't contain enough lines.");
@@ -60,9 +65,21 @@ public class ColumnIntervalInstruction implements TextInstruction {
                     value = value.strip();
                 }
 
-                rows.putIfAbsent(name, new ArrayList<>());
-                rows.get(name).add(value);
+                String colName = name;
+
+                if (columnarFormat != null) {
+                    // Multiple file lines for the same table row
+                    colName = columnarFormat
+                        .replace("%n", name)
+                        .replace("%a", String.valueOf(line))
+                        .replace("%r", String.valueOf(relativeLine));
+                }
+
+                rows.putIfAbsent(colName, new ArrayList<>());
+                rows.get(colName).add(value);
             }
+
+            ++relativeLine;
         }
 
         table.addRows(rows);

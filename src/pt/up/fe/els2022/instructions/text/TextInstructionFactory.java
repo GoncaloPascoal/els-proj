@@ -57,13 +57,15 @@ public class TextInstructionFactory {
                 Object linesObj = args.get("lines");
                 Object columnIntervalsObj = args.get("columnIntervals");
                 Object stripWhitespaceObj = args.get("stripWhitespace");
+                Object columnarFormatObj = args.get("columnarFormat");
 
                 if (linesObj == null || columnIntervalsObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for columnInterval instruction.");
                 }
 
                 if (!(linesObj instanceof List<?> && columnIntervalsObj instanceof Map<?, ?>
-                        && (stripWhitespaceObj == null || stripWhitespaceObj instanceof Boolean))) {
+                        && (stripWhitespaceObj == null || stripWhitespaceObj instanceof Boolean)
+                        && (columnarFormatObj == null || columnarFormatObj instanceof String))) {
                     throw new IllegalArgumentException("Incorrect argument types for columnInterval instruction.");
                 }
 
@@ -71,8 +73,9 @@ public class TextInstructionFactory {
                     List<Interval> lines = parseIntervalList(linesObj);
                     Map<String, Interval> columnIntervals = parseColumnIntervals(columnIntervalsObj);
                     Boolean stripWhitespace = (Boolean) stripWhitespaceObj;
+                    String columnarFormat = (String) columnarFormatObj;
 
-                    return new ColumnIntervalInstruction(lines, columnIntervals, stripWhitespace);
+                    return new ColumnIntervalInstruction(lines, columnIntervals, stripWhitespace, columnarFormat);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for columnInterval instruction.");

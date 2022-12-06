@@ -76,6 +76,8 @@ public class Table {
     }
 
     public void renameColumn(String oldName, String newName) {
+        if (newName.equals(oldName)) return;
+
         if (data.containsKey(newName)) {
             throw new IllegalArgumentException("Column already exists: " + newName);
         }

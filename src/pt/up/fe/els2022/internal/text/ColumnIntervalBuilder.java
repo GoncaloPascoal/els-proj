@@ -13,6 +13,7 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
     private List<Interval> lines;
     private Map<String, Interval> columnIntervals;
     private Boolean stripWhitespace;
+    private String columnarFormat;
 
     public ColumnIntervalBuilder(LoadUnstructuredBuilder parent) {
         super(parent);
@@ -38,6 +39,11 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
         return this;
     }
 
+    public ColumnIntervalBuilder withColumnarFormat(String columnarFormat) {
+        this.columnarFormat = columnarFormat;
+        return this;
+    }
+
     @Override
     protected void validate() {
         if (lines == null || columnIntervals == null) {
@@ -47,6 +53,6 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
 
     @Override
     protected TextInstruction createUnsafe() {
-        return new ColumnIntervalInstruction(lines, columnIntervals, stripWhitespace);
+        return new ColumnIntervalInstruction(lines, columnIntervals, stripWhitespace, columnarFormat);
     }
 }

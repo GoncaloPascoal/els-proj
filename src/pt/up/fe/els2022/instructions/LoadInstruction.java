@@ -47,9 +47,6 @@ public abstract class LoadInstruction implements Instruction {
         }
         this.metadataColumns = metadataColumns;
 
-        if (columnSuffix == null) {
-            columnSuffix = "";
-        }
         this.columnSuffix = columnSuffix;
     }
 
@@ -67,8 +64,11 @@ public abstract class LoadInstruction implements Instruction {
         }
 
         Table dataTable = adapter.extractTable(files);
-        for (String colName : Set.copyOf(dataTable.getColumnNames())) {
-            dataTable.renameColumn(colName, colName + columnSuffix);
+
+        if (columnSuffix != null) {
+            for (String colName : Set.copyOf(dataTable.getColumnNames())) {
+                dataTable.renameColumn(colName, colName + columnSuffix);
+            }
         }
 
         newTable.merge(dataTable);

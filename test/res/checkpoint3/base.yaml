@@ -12,18 +12,19 @@
       - test/res/checkpoint3/data/[0-9]+/analysis.json
     paths: [//total//dynamic]
     columnSuffix: ' (Dynamic)'
-# - loadUnstructured:
-#     target: t3
-#     files:
-#       - test/res/checkpoint2/data/gprof.txt
-#     instructions:
-#       - columnInterval:
-#           lines: [6]
-#           columnIntervals:
-#             HighestPercentage: [1, 7]
-#             HighestName: 55
+- loadUnstructured:
+    target: t3
+    files:
+      - test/res/checkpoint3/data/[0-9]+/gprof.txt
+    instructions:
+      - columnInterval:
+          lines: [[6, 8]]
+          columnIntervals:
+            name: 55
+            '%': [1, 7]
+          columnarFormat: '%n #%r'
 - merge:
-    tables: [t1, t2]
+    tables: [t1, t2, t3]
 - sort:
     target: t1
     column: dir
