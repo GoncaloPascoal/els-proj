@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.map.ListOrderedMap;
+
 import pt.up.fe.els2022.adapters.Interval;
 import pt.up.fe.els2022.instructions.text.ColumnIntervalInstruction;
 import pt.up.fe.els2022.instructions.text.TextInstruction;
@@ -17,6 +19,7 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
 
     public ColumnIntervalBuilder(LoadUnstructuredBuilder parent) {
         super(parent);
+        this.columnIntervals = new ListOrderedMap<>();
     }
 
     public ColumnIntervalBuilder withLines(List<Interval> lines) {
@@ -29,8 +32,8 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
         return this;
     }
 
-    public ColumnIntervalBuilder withColumnIntervals(Map<String, Interval> columnIntervals) {
-        this.columnIntervals = columnIntervals;
+    public ColumnIntervalBuilder addColumnInterval(String column, Interval interval) {
+        columnIntervals.put(column, interval);
         return this;
     }
 

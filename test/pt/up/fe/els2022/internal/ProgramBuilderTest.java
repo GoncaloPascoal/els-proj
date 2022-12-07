@@ -21,7 +21,7 @@ public class ProgramBuilderTest {
                 .withTarget("t1")
                 .withFilePaths("test/res/checkpoint2/data/vitis-report.xml")
                 .withPaths("//Resources")
-                .withMetadataColumns(Map.of("Folder", MetadataType.DIRECTORY))
+                .withMetadataColumns(Map.of("Folder", MetadataType.DIRECTORY_PATH))
                 .close()
             .loadStructured()
                 .withTarget("t2")
@@ -33,10 +33,8 @@ public class ProgramBuilderTest {
                 .withFilePaths("test/res/checkpoint2/data/gprof.txt")
                 .columnInterval()
                     .withLines(new Interval(6))
-                    .withColumnIntervals(Map.of(
-                        "HighestPercentage", new Interval(1, 7),
-                        "HighestName", new Interval(55))
-                    )
+                    .addColumnInterval("HighestPercentage", new Interval(1, 7))
+                    .addColumnInterval("HighestName", new Interval(55))
                     .close()
                 .close()
             .merge()
