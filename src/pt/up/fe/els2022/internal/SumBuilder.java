@@ -10,6 +10,6 @@ public class SumBuilder extends FunctionBuilder<SumBuilder> {
 
     @Override
     protected Instruction createUnsafe() {
-        return new SumInstruction(target, columns, excludeColumns);
+        return new SumInstruction(source, columns, excludeColumns, target);
     }
 }

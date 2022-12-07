@@ -5,15 +5,16 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class FunctionBuilder<T extends FunctionBuilder<T>> extends InstructionBuilder {
-    protected String target;
+    protected String source;
     protected Set<String> columns, excludeColumns;
+    protected String target;
 
     public FunctionBuilder(ProgramBuilder parent) {
         super(parent);
     }
 
-    public T withTarget(String target) {
-        this.target = target;
+    public T withSource(String source) {
+        this.source = source;
         return thisSubclass();
     }
 
@@ -42,6 +43,11 @@ public abstract class FunctionBuilder<T extends FunctionBuilder<T>> extends Inst
         return thisSubclass();
     }
 
+    public T withTarget(String target) {
+        this.target = target;
+        return thisSubclass();
+    }
+
     @SuppressWarnings("unchecked")
     private T thisSubclass() {
         return (T) this;
@@ -49,7 +55,7 @@ public abstract class FunctionBuilder<T extends FunctionBuilder<T>> extends Inst
 
     @Override
     protected void validate() {
-        if (target == null) {
+        if (source == null) {
             throw new RuntimeException("Missing arguments for function instruction.");
         }
     }

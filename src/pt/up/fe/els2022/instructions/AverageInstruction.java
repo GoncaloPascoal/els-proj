@@ -12,8 +12,8 @@ public class AverageInstruction extends FunctionInstruction {
         DecimalFormatSymbols.getInstance(Locale.ENGLISH)
     );
 
-    public AverageInstruction(String target, Set<String> columns, Set<String> excludeColumns) {
-        super(target, columns, excludeColumns);
+    public AverageInstruction(String source, Set<String> columns, Set<String> excludeColumns, String target) {
+        super(source, columns, excludeColumns, target);
     }
 
     @Override

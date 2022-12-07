@@ -29,11 +29,15 @@
     target: t1
     column: dir
 - average:
-    target: t1
+    source: t1
+    target: t1_c
     excludeColumns: [dir]
 - sum:
-    target: t1
+    source: t1
+    target: t1_c
     excludeColumns: [dir]
+- concatenate:
+    tables: [t1, t1_c]
 - save:
     source: t1
     file: out/base.csv

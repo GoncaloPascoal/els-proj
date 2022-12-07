@@ -28,13 +28,15 @@ public class InstructionFactory {
     }
 
     private static class FunctionParameters {
-        public String target;
+        public String source;
         public Set<String> columns, excludeColumns;
+        public String target;
 
-        public FunctionParameters(String target, List<String> columns, List<String> excludeColumns) {
-            this.target = target;
+        public FunctionParameters(String source, List<String> columns, List<String> excludeColumns, String target) {
+            this.source = source;
             this.columns = columns == null ? null : Set.copyOf(columns);
             this.excludeColumns = excludeColumns == null ? null : Set.copyOf(excludeColumns);
+            this.target = target;
         }
     }
 
@@ -73,25 +75,28 @@ public class InstructionFactory {
     }
 
     private static FunctionParameters parseFunctionParameters(Map<String, Object> args) {
-        Object targetObj = args.get("target");
+        Object sourceObj = args.get("source");
         Object columnsObj = args.get("columns");
         Object excludeColumnsObj = args.get("excludeColumns");
+        Object targetObj = args.get("target");
 
-        if (targetObj == null) {
+        if (sourceObj == null) {
             throw new IllegalArgumentException("Missing required arguments for function instruction.");
         }
 
-        if (!(targetObj instanceof String && (columnsObj == null || columnsObj instanceof List<?>) &&
-                (excludeColumnsObj == null || excludeColumnsObj instanceof List<?>))) {
+        if (!(sourceObj instanceof String && (columnsObj == null || columnsObj instanceof List<?>) &&
+                (excludeColumnsObj == null || excludeColumnsObj instanceof List<?>) &&
+                (targetObj == null || targetObj instanceof String))) {
             throw new IllegalArgumentException("Incorrect argument types for function instruction.");
         }
 
         try {
-            String target = (String) targetObj;
+            String source = (String) sourceObj;
             List<String> columns = columnsObj == null ? null : SpecsCollections.cast((List<?>) columnsObj, String.class);
             List<String> excludeColumns = excludeColumnsObj == null ? null : SpecsCollections.cast((List<?>) excludeColumnsObj, String.class);
+            String target = (String) targetObj;
 
-            return new FunctionParameters(target, columns, excludeColumns);
+            return new FunctionParameters(source, columns, excludeColumns, target);
         }
         catch (RuntimeException ex) {
             throw new IllegalArgumentException("Incorrect argument types for function instruction: " + ex.getMessage());
@@ -191,7 +196,7 @@ public class InstructionFactory {
 
                 try {
                     List<String> tables = SpecsCollections.cast((List<?>) tablesObj, String.class);
-                    String target = targetObj == null ? null : (String) targetObj;
+                    String target = (String) targetObj;
 
                     return new MergeInstruction(tables, target);
                 }
@@ -239,7 +244,7 @@ public class InstructionFactory {
                 try {
                     String target = (String) targetObj;
                     String column = (String) columnObj;
-                    Boolean descending = descendingObj == null ? null : (Boolean) descendingObj;
+                    Boolean descending = (Boolean) descendingObj;
 
                     return new SortInstruction(target, column, descending);
                 }
@@ -249,11 +254,11 @@ public class InstructionFactory {
             }
             case "average": {
                 FunctionParameters fp = parseFunctionParameters(args);
-                return new AverageInstruction(fp.target, fp.columns, fp.excludeColumns);
+                return new AverageInstruction(fp.source, fp.columns, fp.excludeColumns, fp.target);
             }
             case "sum": {
                 FunctionParameters fp = parseFunctionParameters(args);
-                return new SumInstruction(fp.target, fp.columns, fp.excludeColumns);
+                return new SumInstruction(fp.source, fp.columns, fp.excludeColumns, fp.target);
             }
             default:
                 throw new IllegalArgumentException(type + " is not a valid instruction type.");

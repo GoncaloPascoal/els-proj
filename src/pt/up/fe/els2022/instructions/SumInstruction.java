@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 public class SumInstruction extends FunctionInstruction {
-    public SumInstruction(String target, Set<String> columns, Set<String> excludeColumns) {
-        super(target, columns, excludeColumns);
+    public SumInstruction(String source, Set<String> columns, Set<String> excludeColumns, String target) {
+        super(source, columns, excludeColumns, target);
     }
 
     @Override
