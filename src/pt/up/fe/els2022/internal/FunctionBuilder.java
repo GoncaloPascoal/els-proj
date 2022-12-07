@@ -6,7 +6,7 @@ import java.util.Set;
 
 public abstract class FunctionBuilder<T extends FunctionBuilder<T>> extends InstructionBuilder {
     protected String target;
-    protected Set<String> columns;
+    protected Set<String> columns, excludeColumns;
 
     public FunctionBuilder(ProgramBuilder parent) {
         super(parent);
@@ -29,6 +29,16 @@ public abstract class FunctionBuilder<T extends FunctionBuilder<T>> extends Inst
 
     public T withColumns(String... columns) {
         this.columns = Set.of(columns);
+        return thisSubclass();
+    }
+
+    public T withExcludeColumns(List<String> excludeColumns) {
+        this.excludeColumns = new HashSet<>(excludeColumns);
+        return thisSubclass();
+    }
+
+    public T withExcludeColumns(String... excludeColumns) {
+        this.excludeColumns = Set.of(excludeColumns);
         return thisSubclass();
     }
 

@@ -1,6 +1,7 @@
 package pt.up.fe.els2022.instructions;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,15 +13,16 @@ import pt.up.fe.els2022.model.Table;
 
 public abstract class FunctionInstruction implements Instruction {
     private final String target;
-    private final Set<String> columns;
+    private final Set<String> columns, excludeColumns;
 
-    protected FunctionInstruction(String target, Set<String> columns) {
+    protected FunctionInstruction(String target, Set<String> columns, Set<String> excludeColumns) {
         this.target = target;
-
-        if (columns == null) {
-            columns = Collections.emptySet();
-        }
         this.columns = columns;
+
+        if (excludeColumns == null) {
+            excludeColumns = Collections.emptySet();
+        }
+        this.excludeColumns = excludeColumns;
     }
 
     protected abstract String applyToColumn(List<String> column);
@@ -30,10 +32,15 @@ public abstract class FunctionInstruction implements Instruction {
         Table table = state.getTable(target);
         Map<String, String> row = new ListOrderedMap<>();
 
+        final Set<String> includeColumns = new HashSet<>(columns == null ? table.getColumnNames() : columns);
+        includeColumns.removeAll(excludeColumns);
+
         for (String colName : table.getColumnNames()) {
-            if (columns.isEmpty() || columns.contains(colName)) {
+            if (includeColumns.contains(colName)) {
                 row.put(colName, applyToColumn(table.getColumn(colName)));
             }
         }
+
+        table.addRow(row);
     }
 }

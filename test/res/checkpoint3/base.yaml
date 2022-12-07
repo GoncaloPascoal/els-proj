@@ -28,6 +28,12 @@
 - sort:
     target: t1
     column: dir
+- average:
+    target: t1
+    excludeColumns: [dir]
+- sum:
+    target: t1
+    excludeColumns: [dir]
 - save:
     source: t1
     file: out/base.csv

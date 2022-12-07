@@ -1,11 +1,19 @@
 package pt.up.fe.els2022.instructions;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class AverageInstruction extends FunctionInstruction {
-    public AverageInstruction(String target, Set<String> columns) {
-        super(target, columns);
+    private static final DecimalFormat format = new DecimalFormat(
+        "#.#####",
+        DecimalFormatSymbols.getInstance(Locale.ENGLISH)
+    );
+
+    public AverageInstruction(String target, Set<String> columns, Set<String> excludeColumns) {
+        super(target, columns, excludeColumns);
     }
 
     @Override
@@ -21,6 +29,6 @@ public class AverageInstruction extends FunctionInstruction {
             }
         }
 
-        return String.valueOf(total / column.size());
+        return format.format(total / column.size());
     }
 }

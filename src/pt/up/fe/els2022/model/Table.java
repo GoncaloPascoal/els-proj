@@ -48,7 +48,7 @@ public class Table {
         }
 
         for (String column : missingColumns) {
-            data.get(column).add(numRows(rows), null);
+            data.get(column).addAll(Collections.nCopies(numRows(rows), null));
         }
     }
 
@@ -61,11 +61,11 @@ public class Table {
         int absoluteDifference = Math.abs(difference);
         if (difference > 0) {
             for (List<String> column : data.values()) {
-                column.add(absoluteDifference, null);
+                column.addAll(Collections.nCopies(absoluteDifference, null));
             }
         }
         else if (difference < 0) {
-            values.add(absoluteDifference, null);
+            values.addAll(Collections.nCopies(absoluteDifference, null));
         }
 
         data.put(name, values);

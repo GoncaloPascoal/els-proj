@@ -10,6 +10,6 @@ public class AverageBuilder extends FunctionBuilder<AverageBuilder> {
 
     @Override
     protected Instruction createUnsafe() {
-        return new AverageInstruction(target, columns);
+        return new AverageInstruction(target, columns, excludeColumns);
     }
 }

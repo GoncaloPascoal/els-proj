@@ -3,6 +3,7 @@ package pt.up.fe.els2022.instructions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import pt.up.fe.els2022.instructions.text.TextInstruction;
@@ -23,6 +24,17 @@ public class InstructionFactory {
             this.files = files;
             this.metadataColumns = metadataColumns;
             this.columnSuffix = columnSuffix;
+        }
+    }
+
+    private static class FunctionParameters {
+        public String target;
+        public Set<String> columns, excludeColumns;
+
+        public FunctionParameters(String target, List<String> columns, List<String> excludeColumns) {
+            this.target = target;
+            this.columns = columns == null ? null : Set.copyOf(columns);
+            this.excludeColumns = excludeColumns == null ? null : Set.copyOf(excludeColumns);
         }
     }
 
@@ -56,7 +68,33 @@ public class InstructionFactory {
             return new LoadParameters(target, files, metadataColumns, columnSuffix);
         }
         catch (RuntimeException ex) {
-            throw new IllegalArgumentException("Incorrect argument types for load instruction.");
+            throw new IllegalArgumentException("Incorrect argument types for load instruction: " + ex.getMessage());
+        }
+    }
+
+    private static FunctionParameters parseFunctionParameters(Map<String, Object> args) {
+        Object targetObj = args.get("target");
+        Object columnsObj = args.get("columns");
+        Object excludeColumnsObj = args.get("excludeColumns");
+
+        if (targetObj == null) {
+            throw new IllegalArgumentException("Missing required arguments for function instruction.");
+        }
+
+        if (!(targetObj instanceof String && (columnsObj == null || columnsObj instanceof List<?>) &&
+                (excludeColumnsObj == null || excludeColumnsObj instanceof List<?>))) {
+            throw new IllegalArgumentException("Incorrect argument types for function instruction.");
+        }
+
+        try {
+            String target = (String) targetObj;
+            List<String> columns = columnsObj == null ? null : SpecsCollections.cast((List<?>) columnsObj, String.class);
+            List<String> excludeColumns = excludeColumnsObj == null ? null : SpecsCollections.cast((List<?>) excludeColumnsObj, String.class);
+
+            return new FunctionParameters(target, columns, excludeColumns);
+        }
+        catch (RuntimeException ex) {
+            throw new IllegalArgumentException("Incorrect argument types for function instruction: " + ex.getMessage());
         }
     }
 
@@ -208,6 +246,14 @@ public class InstructionFactory {
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for sort instruction: " + ex.getMessage());
                 }
+            }
+            case "average": {
+                FunctionParameters fp = parseFunctionParameters(args);
+                return new AverageInstruction(fp.target, fp.columns, fp.excludeColumns);
+            }
+            case "sum": {
+                FunctionParameters fp = parseFunctionParameters(args);
+                return new SumInstruction(fp.target, fp.columns, fp.excludeColumns);
             }
             default:
                 throw new IllegalArgumentException(type + " is not a valid instruction type.");
