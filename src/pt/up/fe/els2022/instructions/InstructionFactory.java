@@ -182,6 +182,28 @@ public class InstructionFactory {
                     throw new IllegalArgumentException("Incorrect argument types for rename instruction: " + ex.getMessage());
                 }
             }
+            case "concatenate": { // TODO: add parent instruction for concatenate and merge instructions
+                Object tablesObj = args.get("tables");
+                Object targetObj = args.get("target");
+
+                if (tablesObj == null) {
+                    throw new IllegalArgumentException("Missing required arguments for concatenate instruction.");
+                }
+
+                if (!(tablesObj instanceof List<?> && (targetObj == null || targetObj instanceof String))) {
+                    throw new IllegalArgumentException("Incorrect argument types for concatenate instruction.");
+                }
+
+                try {
+                    List<String> tables = SpecsCollections.cast((List<?>) tablesObj, String.class);
+                    String target = (String) targetObj;
+
+                    return new ConcatenateInstruction(tables, target);
+                }
+                catch (RuntimeException ex) {
+                    throw new IllegalArgumentException("Incorrect argument types for concatenate instruction: " + ex.getMessage());
+                }
+            }
             case "merge": {
                 Object tablesObj = args.get("tables");
                 Object targetObj = args.get("target");

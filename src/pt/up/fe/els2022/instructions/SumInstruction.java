@@ -1,9 +1,17 @@
 package pt.up.fe.els2022.instructions;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class SumInstruction extends FunctionInstruction {
+    private static final DecimalFormat format = new DecimalFormat(
+        "#.#####",
+        DecimalFormatSymbols.getInstance(Locale.ENGLISH)
+    );
+
     public SumInstruction(String source, Set<String> columns, Set<String> excludeColumns, String target) {
         super(source, columns, excludeColumns, target);
     }
@@ -21,6 +29,6 @@ public class SumInstruction extends FunctionInstruction {
             }
         }
 
-        return String.valueOf(total);
+        return format.format(total);
     }
 }
