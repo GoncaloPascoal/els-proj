@@ -1,23 +1,191 @@
 grammar pt.up.fe.els2022.tabular.Tabular with org.eclipse.xtext.common.Terminals
 
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
 generate tabular "http://www.up.pt/fe/els2022/tabular/Tabular"
 
-Model:
-	(instructions+=Instruction)+;
-
-Instruction:
-	Merge
+DslModel:
+	(instructions+=DslInstruction)+
 ;
 
-Merge:
-	'merge' '{'
-		(mergeParams+=MergeParam)*
+DslInstruction:
+	DslLoad | DslMerge | DslRename | DslSave | DslFunction | DslSort
+;
+
+/* ------- LOAD ------- */
+
+DslLoad:
+	DslLoadStructured | DslLoadUnstructured
+;
+
+DslLoadParam:
+	(name='target' target=ID) |
+	(name='files' (files+=STRING)+) |
+	(name='metadataColumns' '{'
+		(metadataColumns+=DslLoadMapping)+
+	'}') |
+	(name='columnSuffix' columnSuffix=STRING)
+;
+
+DslLoadMapping:
+	column=(ID|STRING) '->' type=METADATA_TYPE
+;
+
+/* ------- LOAD STRUCTURED ------- */
+
+DslLoadStructured:
+	{DslLoadStructured} 'loadStructured' '{'
+		(params+=(DslLoadParam|DslLoadStructuredParam))*
 	'}'
 ;
 
-MergeParam:
-	('tables' | 'target') LE
+DslLoadStructuredParam:
+	(name='paths' (paths+=STRING)+) |
+	(name='columns' (columns+=(ID|STRING))+)
 ;
 
-// Line ending
-terminal LE: ('\r'? '\n')?;
+/* ------- LOAD UNSTRUCTURED ------- */
+
+DslLoadUnstructured:
+	{DslLoadUnstructured} 'loadUnstructured' '{'
+		(params+=(DslLoadParam|DslLoadUnstructuredParam))*	
+	'}'
+;
+
+DslLoadUnstructuredParam:
+	(name='textInstructions' '{'
+		(textInstructions+=DslTextInstruction)+
+	'}')
+;
+
+DslTextInstruction:
+	DslColumnInterval | DslRegexLineDelimiter
+;
+
+DslColumnInterval:
+	{DslColumnInterval} 'columnInterval' '{'
+		(params+=DslColumnIntervalParam)*
+	'}'
+;
+
+DslColumnIntervalParam:
+    (name='lines' (lines+=INT)+) |
+	(name='stripWhitespace' stripWhitespace=BOOL) |
+	(name='columnarFormat' columnarFormat=STRING) |
+	(name='columnIntervals' '{'
+		(columnIntervals+=DslColumnIntervalMapping)+
+	'}')
+;
+
+DslColumnIntervalMapping:
+	column=(ID|STRING) from=INT (to=INT)?
+;
+
+DslRegexLineDelimiter:
+	{DslRegexLineDelimiter} 'regexLineDelimiter' '{'
+		(params+=DslRegexLineDelimiterParam)*
+	'}'
+;
+
+DslRegexLineDelimiterParam:
+	(name='linePatterns' (linePatterns+=STRING)+) |
+	(name='delimiter' delimiter=STRING)
+;
+
+/* ------- SAVE ------- */
+
+DslSave:
+	{DslSave} 'save' '{'
+		(params+=DslSaveParam)*
+	'}'
+;
+
+DslSaveParam:
+	(name='source' source=ID) |
+	(name='file' file=STRING) |
+	(name='columns' (columns+=(ID|STRING))+)
+;
+
+/* ------- JOIN ------- */
+
+DslJoin:
+	DslMerge | DslConcat
+;
+
+DslMerge:
+	{DslMerge} 'merge' '{'
+		(params+=DslMergeParam)*
+	'}'
+;
+
+DslConcat:
+	{DslConcat} 'concat' '{'
+		(params+=DslMergeParam)*
+	'}'
+;
+
+DslMergeParam:
+	(name='tables' tables+=ID (tables+=ID)+) | // At least two tables must be specified
+	(name='target' target=ID)
+;
+
+/* ------- FUNCTION ------- */
+
+DslFunction:
+	DslAverage | DslSum
+;
+
+DslFunctionParam:
+	(name='source' source=ID) |
+	(name='target' target=ID) |
+	(name='columns' (columns+=(ID|STRING))+) |
+	(name='excludeColumns' (excludeColumns+=(ID|STRING))+)
+;
+
+DslAverage:
+	{DslAverage} ('average' '{'
+		(params+=DslFunctionParam)*
+	'}')
+;
+
+DslSum:
+	{DslSum} ('sum' '{'
+		(params+=DslFunctionParam)*
+	'}')
+;
+
+/* ------- RENAME ------- */
+
+DslRename:
+	{DslRename} 'rename' '{'
+		(params+=DslRenameParam)*
+	'}'
+;
+
+DslRenameParam:
+	(name='source' source=ID) |
+	(name='mapping' '{'
+		(mapping+=DslRenameMapping)+
+	'}')
+;
+
+DslRenameMapping:
+	from=(ID|STRING) '->' to=(ID|STRING)
+;
+
+/* ------- SORT ------- */
+
+DslSort:
+	{DslSort} 'sort' '{'
+		(params+=DslSortParam)*
+	'}'
+;
+
+DslSortParam:
+	(name='target' target=ID) |
+	(name='column' column=(ID|STRING)) |
+	(name='descending' descending=BOOL)
+;
+
+terminal METADATA_TYPE: ('fileName' | 'filePath' | 'absoluteFilePath' | 'directoryName' | 'directoryPath');
+terminal BOOL returns ecore::EBoolean: ('true' | 'false');

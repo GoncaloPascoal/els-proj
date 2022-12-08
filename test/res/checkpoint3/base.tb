@@ -1,0 +1,43 @@
+
+loadStructured {
+    target t1
+    files 'test/res/checkpoint3/data/[0-9]+/analysis.xml'
+    paths '//total//static'
+    metadataColumns {
+        dir -> directoryName
+    }
+    columnSuffix ' (Static)'
+}
+
+loadStructured {
+    target t2
+    files 'test/res/checkpoint3/data/[0-9]+/analysis.json'
+    paths '//total//dynamic'
+    columnSuffix ' (Dynamic)'
+}
+
+merge {
+    tables t1 t2 t3
+}
+
+sort {
+    target t1
+    column dir
+}
+
+average {
+    source t1
+    target t1_c
+    excludeColumns dir
+}
+
+sum {
+    source t1
+    target t1_c
+    excludeColumns dir
+}
+
+save {
+    source t1
+    file 'out/base.csv'
+}

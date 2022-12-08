@@ -8,7 +8,7 @@ import java.util.Map;
 
 public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionBuilder {
     protected String target;
-    protected List<String> filePaths;
+    protected List<String> files;
     protected Map<String, MetadataType> metadataColumns;
     protected String columnSuffix;
 
@@ -21,13 +21,13 @@ public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionB
         return thisSubclass();
     }
 
-    public T withFilePaths(List<String> filePaths) {
-        this.filePaths = filePaths;
+    public T withFiles(List<String> files) {
+        this.files = files;
         return thisSubclass();
     }
 
-    public T withFilePaths(String... filePaths) {
-        this.filePaths = Arrays.asList(filePaths);
+    public T withFiles(String... files) {
+        this.files = Arrays.asList(files);
         return thisSubclass();
     }
 
@@ -48,7 +48,7 @@ public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionB
 
     @Override
     protected void validate() {
-        if (target == null || filePaths == null) {
+        if (target == null || files == null) {
             throw new RuntimeException("Missing arguments for load instruction.");
         }
     }

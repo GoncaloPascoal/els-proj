@@ -19,18 +19,18 @@ public class ProgramBuilderTest {
         builder
             .loadStructured()
                 .withTarget("t1")
-                .withFilePaths("test/res/checkpoint2/data/vitis-report.xml")
+                .withFiles("test/res/checkpoint2/data/vitis-report.xml")
                 .withPaths("//Resources")
                 .withMetadataColumns(Map.of("Folder", MetadataType.DIRECTORY_PATH))
                 .close()
             .loadStructured()
                 .withTarget("t2")
-                .withFilePaths("test/res/checkpoint2/data/decision_tree.json")
+                .withFiles("test/res/checkpoint2/data/decision_tree.json")
                 .withPaths("/", "/params")
                 .close()
             .loadUnstructured()
                 .withTarget("t3")
-                .withFilePaths("test/res/checkpoint2/data/gprof.txt")
+                .withFiles("test/res/checkpoint2/data/gprof.txt")
                 .columnInterval()
                     .withLines(new Interval(6))
                     .addColumnInterval("HighestPercentage", new Interval(1, 7))
@@ -42,7 +42,7 @@ public class ProgramBuilderTest {
                 .close()
             .save()
                 .withSource("t1")
-                .withPath("out/base.csv");
+                .withFile("out/base.csv");
 
         Program program = builder.create();
         program.execute();

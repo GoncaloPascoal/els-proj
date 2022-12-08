@@ -7,7 +7,7 @@ import java.util.List;
 
 public class SaveBuilder extends InstructionBuilder {
     private String source;
-    private String path;
+    private String file;
     private List<String> columns;
 
     public SaveBuilder(ProgramBuilder parent) {
@@ -19,8 +19,8 @@ public class SaveBuilder extends InstructionBuilder {
         return this;
     }
 
-    public SaveBuilder withPath(String path) {
-        this.path = path;
+    public SaveBuilder withFile(String file) {
+        this.file = file;
         return this;
     }
 
@@ -31,13 +31,13 @@ public class SaveBuilder extends InstructionBuilder {
 
     @Override
     protected void validate() {
-        if (source == null || path == null) {
+        if (source == null || file == null) {
             throw new RuntimeException("Missing arguments for save instruction.");
         }
     }
 
     @Override
     protected Instruction createUnsafe() {
-        return new SaveInstruction(source, path, columns);
+        return new SaveInstruction(source, file, columns);
     }
 }
