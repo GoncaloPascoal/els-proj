@@ -12,6 +12,10 @@ DslInstruction:
 	DslLoad | DslMerge | DslRename | DslSave | DslFunction | DslSort
 ;
 
+DslInterval:
+	start=INT ('-' end=INT)?
+;
+
 /* ------- LOAD ------- */
 
 DslLoad:
@@ -69,7 +73,7 @@ DslColumnInterval:
 ;
 
 DslColumnIntervalParam:
-    (name='lines' (lines+=INT)+) |
+    (name='lines' (lines+=DslInterval)+) |
 	(name='stripWhitespace' stripWhitespace=BOOL) |
 	(name='columnarFormat' columnarFormat=STRING) |
 	(name='columnIntervals' '{'
@@ -78,7 +82,7 @@ DslColumnIntervalParam:
 ;
 
 DslColumnIntervalMapping:
-	column=(ID|STRING) from=INT (to=INT)?
+	column=(ID|STRING) '->' DslInterval
 ;
 
 DslRegexLineDelimiter:

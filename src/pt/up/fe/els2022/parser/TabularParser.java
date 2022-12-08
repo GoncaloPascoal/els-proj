@@ -12,8 +12,11 @@ import org.eclipse.xtext.parser.IParser;
 
 import com.google.inject.Inject;
 
+import pt.up.fe.els2022.adapters.Interval;
 import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.internal.*;
+import pt.up.fe.els2022.internal.text.ColumnIntervalBuilder;
+import pt.up.fe.els2022.internal.text.RegexLineDelimiterBuilder;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.tabular.TabularStandaloneSetup;
 import pt.up.fe.els2022.tabular.tabular.*;
@@ -38,14 +41,14 @@ public class TabularParser {
         IParseResult result = parser.parse(new StringReader(code));
         FunctionClassMap<DslInstruction, Instruction> instructionParseMap = new FunctionClassMap<>();
 
-        instructionParseMap.put(DslLoadStructured.class, this::loadStructured); // X
+        instructionParseMap.put(DslLoadStructured.class, this::loadStructured);
         instructionParseMap.put(DslLoadUnstructured.class, this::loadUnstructured);
-        instructionParseMap.put(DslMerge.class, this::merge); // X
-        instructionParseMap.put(DslRename.class, this::rename); // X
-        instructionParseMap.put(DslSort.class, this::sort); // X
-        instructionParseMap.put(DslAverage.class, this::average); // X
-        instructionParseMap.put(DslSum.class, this::sum); // X
-        instructionParseMap.put(DslSave.class, this::save); // X
+        instructionParseMap.put(DslMerge.class, this::merge);
+        instructionParseMap.put(DslRename.class, this::rename);
+        instructionParseMap.put(DslSort.class, this::sort);
+        instructionParseMap.put(DslAverage.class, this::average);
+        instructionParseMap.put(DslSum.class, this::sum);
+        instructionParseMap.put(DslSave.class, this::save);
 
         if (result.hasSyntaxErrors()) {
             System.err.println("Provided script has syntax errors:");
@@ -61,11 +64,14 @@ public class TabularParser {
 
         for (DslInstruction dslInstruction : model.getInstructions()) {
             Instruction instruction = instructionParseMap.apply(dslInstruction);
-            System.out.println(instruction);
         }
     }
 
-    private static Map<String, BiConsumer<LoadBuilder<?>, DslLoadParam>> loadParamMap = Map.ofEntries(
+    private static Interval parseInterval(DslInterval dslInterval) {
+        // TODO
+    }
+
+    private static final Map<String, BiConsumer<LoadBuilder<?>, DslLoadParam>> loadParamMap = Map.ofEntries(
         Map.entry("target", (b, p) -> b.withTarget(p.getTarget())),
         Map.entry("files", (b, p) -> b.withFiles(p.getFiles())),
         Map.entry("metadataColumns", (b, p) -> b.withMetadataColumns(
@@ -76,13 +82,12 @@ public class TabularParser {
         Map.entry("columnSuffix", (b, p) -> b.withColumnSuffix(p.getColumnSuffix()))
     );
 
-    private static Map<String, BiConsumer<LoadStructuredBuilder, DslLoadStructuredParam>> loadStructuredParamMap = Map.ofEntries(
+    private static final Map<String, BiConsumer<LoadStructuredBuilder, DslLoadStructuredParam>> loadStructuredParamMap = Map.ofEntries(
         Map.entry("paths", (b, p) -> b.withPaths(p.getPaths())),
         Map.entry("columns", (b, p) -> b.withColumns(p.getColumns()))
     );
 
-    private Instruction loadStructured(DslInstruction dslInstruction) {
-        DslLoadStructured loadStructured = (DslLoadStructured) dslInstruction;
+    private Instruction loadStructured(DslLoadStructured loadStructured) {
         LoadStructuredBuilder builder = new LoadStructuredBuilder(null);
 
         BiConsumerClassMap<EObject, LoadStructuredBuilder> paramMap = new BiConsumerClassMap<>();
@@ -96,12 +101,48 @@ public class TabularParser {
         return builder.create();
     }
 
-    private static Map<String, BiConsumer<LoadUnstructuredBuilder, DslLoadUnstructuredParam>> loadUnstructuredParamMap = Map.ofEntries(
-        Map.entry("textInstructions", (b, p) -> b.close()) // TODO
+    private final Map<String, BiConsumer<LoadUnstructuredBuilder, DslLoadUnstructuredParam>> loadUnstructuredParamMap = Map.ofEntries(
+        Map.entry("textInstructions", this::parseTextInstructions)
     );
 
-    private Instruction loadUnstructured(DslInstruction dslInstruction) {
-        DslLoadUnstructured loadUnstructured = (DslLoadUnstructured) dslInstruction;
+    private void parseTextInstructions(LoadUnstructuredBuilder builder, DslLoadUnstructuredParam param) {
+        BiConsumerClassMap<DslTextInstruction, LoadUnstructuredBuilder> instructionParseMap = new BiConsumerClassMap<>();
+
+        instructionParseMap.put(DslColumnInterval.class, this::columnInterval);
+        instructionParseMap.put(DslRegexLineDelimiter.class, this::regexLineDelimiter);
+
+        for (DslTextInstruction dslTextInstruction : param.getTextInstructions()) {
+            instructionParseMap.accept(dslTextInstruction, builder);
+        }
+    }
+
+    private static final Map<String, BiConsumer<ColumnIntervalBuilder, DslColumnIntervalParam>> columnIntervalParamMap = Map.ofEntries(
+        Map.entry("stripWhitespace", (b, p) -> b.withStripWhitespace(p.isStripWhitespace())),
+        Map.entry("columnarFormat", (b, p) -> b.withColumnarFormat(p.getColumnarFormat()))
+    );
+
+    private void columnInterval(DslColumnInterval columnInterval, LoadUnstructuredBuilder parent) {
+        var builder = parent.columnInterval();
+
+        for (DslColumnIntervalParam param : columnInterval.getParams()) {
+            columnIntervalParamMap.get(param.getName()).accept(builder, param);
+        }
+    }
+
+    private static final Map<String, BiConsumer<RegexLineDelimiterBuilder, DslRegexLineDelimiterParam>> regexLineDelimiterParamMap = Map.ofEntries(
+        Map.entry("linePatterns", (b, p) -> b.withLinePatterns(p.getLinePatterns())),
+        Map.entry("delimiter", (b, p) -> b.withDelimiter(p.getDelimiter()))
+    );
+
+    private void regexLineDelimiter(DslRegexLineDelimiter regexLineDelimiter, LoadUnstructuredBuilder parent) {
+        var builder = parent.regexLineDelimiter();
+
+        for (DslRegexLineDelimiterParam param : regexLineDelimiter.getParams()) {
+            regexLineDelimiterParamMap.get(param.getName()).accept(builder, param);
+        }
+    }
+
+    private Instruction loadUnstructured(DslLoadUnstructured loadUnstructured) {
         LoadUnstructuredBuilder builder = new LoadUnstructuredBuilder(null);
 
         BiConsumerClassMap<EObject, LoadUnstructuredBuilder> paramMap = new BiConsumerClassMap<>();
@@ -120,8 +161,7 @@ public class TabularParser {
         Map.entry("target", (b, p) -> b.withTarget(p.getTarget()))
     );
 
-    private Instruction merge(DslInstruction dslInstruction) {
-        DslMerge merge = (DslMerge) dslInstruction;
+    private Instruction merge(DslMerge merge) {
         MergeBuilder builder = new MergeBuilder(null);
 
         for (DslMergeParam param : merge.getParams()) {
@@ -131,8 +171,7 @@ public class TabularParser {
         return builder.create();
     }
 
-    // private Instruction concat(DslInstruction dslInstruction) {
-    //     DslConcat concat = (DslConcat) dslInstruction;
+    // private Instruction concat(DslConcat concat) {
     //     ConcatenateBuilder builder = new ConcatenateBuilder(null);
 
     //     for (DslJoinParam param : concat.getParams()) {
@@ -150,8 +189,7 @@ public class TabularParser {
             )))
     );
 
-    private Instruction rename(DslInstruction dslInstruction) {
-        DslRename rename = (DslRename) dslInstruction;
+    private Instruction rename(DslRename rename) {
         RenameBuilder builder = new RenameBuilder(null);
 
         for (DslRenameParam param : rename.getParams()) {
@@ -167,8 +205,7 @@ public class TabularParser {
         Map.entry("descending", (b, p) -> b.withDescending(p.isDescending()))
     );
 
-    private Instruction sort(DslInstruction dslInstruction) {
-        DslSort sort = (DslSort) dslInstruction;
+    private Instruction sort(DslSort sort) {
         SortBuilder builder = new SortBuilder(null);
 
         for (DslSortParam param : sort.getParams()) {
@@ -185,8 +222,7 @@ public class TabularParser {
         Map.entry("excludeColumns", (b, p) -> b.withExcludeColumns(p.getExcludeColumns()))
     );
 
-    private Instruction average(DslInstruction dslInstruction) {
-        DslAverage average = (DslAverage) dslInstruction;
+    private Instruction average(DslAverage average) {
         AverageBuilder builder = new AverageBuilder(null);
 
         for (DslFunctionParam param : average.getParams()) {
@@ -196,8 +232,7 @@ public class TabularParser {
         return builder.create();
     }
 
-    private Instruction sum(DslInstruction dslInstruction) {
-        DslSum sum = (DslSum) dslInstruction;
+    private Instruction sum(DslSum sum) {
         SumBuilder builder = new SumBuilder(null);
 
         for (DslFunctionParam param : sum.getParams()) {
@@ -213,8 +248,7 @@ public class TabularParser {
         Map.entry("columns", (b, p) -> b.withColumns(p.getColumns()))
     );
 
-    private Instruction save(DslInstruction dslInstruction) {
-        DslSave save = (DslSave) dslInstruction;
+    private Instruction save(DslSave save) {
         SaveBuilder builder = new SaveBuilder(null);
 
         for (DslSaveParam param : save.getParams()) {
