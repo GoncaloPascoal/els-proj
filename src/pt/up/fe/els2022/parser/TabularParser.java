@@ -2,6 +2,8 @@ package pt.up.fe.els2022.parser;
 
 import java.io.File;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import pt.up.fe.els2022.internal.*;
 import pt.up.fe.els2022.internal.text.ColumnIntervalBuilder;
 import pt.up.fe.els2022.internal.text.RegexLineDelimiterBuilder;
 import pt.up.fe.els2022.model.MetadataType;
+import pt.up.fe.els2022.model.Program;
 import pt.up.fe.els2022.tabular.TabularStandaloneSetup;
 import pt.up.fe.els2022.tabular.tabular.*;
 import pt.up.fe.specs.util.SpecsIo;
@@ -33,11 +36,11 @@ public class TabularParser {
         injector.injectMembers(this);
     }
 
-    public void parse(File file) {
-        parse(SpecsIo.read(file));
+    public Program parse(File file) {
+        return parse(SpecsIo.read(file));
     }
 
-    public void parse(String code) {
+    public Program parse(String code) {
         IParseResult result = parser.parse(new StringReader(code));
         FunctionClassMap<DslInstruction, Instruction> instructionParseMap = new FunctionClassMap<>();
 
@@ -51,24 +54,31 @@ public class TabularParser {
         instructionParseMap.put(DslSave.class, this::save);
 
         if (result.hasSyntaxErrors()) {
-            System.err.println("Provided script has syntax errors:");
+            StringBuilder errBuilder = new StringBuilder();
+
+            errBuilder.append("Provided script has syntax errors:\n");
 
             for (var error : result.getSyntaxErrors()) {
-                System.err.println("- Line " + error.getStartLine() + ": " +
-                    error.getSyntaxErrorMessage().getMessage());
+                errBuilder.append("- Line ").append(error.getStartLine()).append(": ")
+                    .append(error.getSyntaxErrorMessage().getMessage());
             }
-            return;
+
+            throw new IllegalArgumentException(errBuilder.toString());
         }
 
         var model = (DslModel) result.getRootASTElement();
 
+        List<Instruction> instructions = new ArrayList<>();
         for (DslInstruction dslInstruction : model.getInstructions()) {
-            Instruction instruction = instructionParseMap.apply(dslInstruction);
+            instructions.add(instructionParseMap.apply(dslInstruction));
         }
+
+        return new Program(instructions);
     }
 
     private static Interval parseInterval(DslInterval dslInterval) {
-        // TODO
+        OptionalInt end = dslInterval.getEnd();
+        return new Interval(dslInterval.getStart(), end == null ? null : end.getVal());
     }
 
     private static final Map<String, BiConsumer<LoadBuilder<?>, DslLoadParam>> loadParamMap = Map.ofEntries(
@@ -117,6 +127,13 @@ public class TabularParser {
     }
 
     private static final Map<String, BiConsumer<ColumnIntervalBuilder, DslColumnIntervalParam>> columnIntervalParamMap = Map.ofEntries(
+        Map.entry("lines", (b, p) -> b.withLines(p.getLines()
+            .stream().map(TabularParser::parseInterval).collect(Collectors.toList()))
+        ),
+        Map.entry("columnIntervals", (b, p) -> b.withColumnIntervals(p.getColumnIntervals()
+            .stream().collect(
+                Collectors.toMap(DslColumnIntervalMapping::getColumn, e -> parseInterval(e.getInterval()))
+            ))),
         Map.entry("stripWhitespace", (b, p) -> b.withStripWhitespace(p.isStripWhitespace())),
         Map.entry("columnarFormat", (b, p) -> b.withColumnarFormat(p.getColumnarFormat()))
     );

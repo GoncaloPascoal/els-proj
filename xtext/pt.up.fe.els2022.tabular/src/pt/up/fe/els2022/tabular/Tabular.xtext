@@ -13,7 +13,11 @@ DslInstruction:
 ;
 
 DslInterval:
-	start=INT ('-' end=INT)?
+	start=INT ('-' end=OptionalInt)?
+;
+
+OptionalInt:
+	val=INT
 ;
 
 /* ------- LOAD ------- */
@@ -82,7 +86,7 @@ DslColumnIntervalParam:
 ;
 
 DslColumnIntervalMapping:
-	column=(ID|STRING) '->' DslInterval
+	column=(ID|STRING) '->' interval=DslInterval
 ;
 
 DslRegexLineDelimiter:
@@ -193,3 +197,4 @@ DslSortParam:
 
 terminal METADATA_TYPE: ('fileName' | 'filePath' | 'absoluteFilePath' | 'directoryName' | 'directoryPath');
 terminal BOOL returns ecore::EBoolean: ('true' | 'false');
+

@@ -16,6 +16,21 @@ loadStructured {
     columnSuffix ' (Dynamic)'
 }
 
+loadUnstructured {
+    target t3
+    files 'test/res/checkpoint3/data/[0-9]+/gprof.txt'
+    textInstructions {
+        columnInterval {
+            lines 6-8
+            columnIntervals {
+                name -> 55
+                '%' -> 1-7
+            }
+            columnarFormat '%n #%r'
+        }
+    }
+}
+
 merge {
     tables t1 t2 t3
 }

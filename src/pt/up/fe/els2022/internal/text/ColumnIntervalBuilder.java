@@ -37,6 +37,11 @@ public class ColumnIntervalBuilder extends TextInstructionBuilder {
         return this;
     }
 
+    public ColumnIntervalBuilder withColumnIntervals(Map<String, Interval> columnIntervals) {
+        this.columnIntervals = columnIntervals;
+        return this;
+    }
+
     public ColumnIntervalBuilder withStripWhitespace(Boolean stripWhitespace) {
         this.stripWhitespace = stripWhitespace;
         return this;

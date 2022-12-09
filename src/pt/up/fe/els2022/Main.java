@@ -16,7 +16,8 @@ public class Main {
         }
 
         TabularParser parser = new TabularParser();
-        parser.parse(new File(args[0]));
+        Program program = parser.parse(new File(args[0]));
+        program.execute();
 
         // // Read configuration file from command-line arguments
         // ConfigParser configParser = new ConfigParser(args[0]);
