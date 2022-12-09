@@ -14,6 +14,12 @@ public class ProgramBuilder {
         builders = new ArrayList<>();
     }
 
+    public AverageBuilder average() {
+        AverageBuilder builder = new AverageBuilder(this);
+        builders.add(builder);
+        return builder;
+    }
+
     public LoadStructuredBuilder loadStructured() {
         LoadStructuredBuilder builder = new LoadStructuredBuilder(this);
         builders.add(builder);
@@ -32,14 +38,26 @@ public class ProgramBuilder {
         return builder;
     }
 
-    public MergeBuilder merge() {
-        MergeBuilder builder = new MergeBuilder(this);
+    public JoinBuilder join() {
+        JoinBuilder builder = new JoinBuilder(this);
         builders.add(builder);
         return builder;
     }
 
     public SaveBuilder save() {
         SaveBuilder builder = new SaveBuilder(this);
+        builders.add(builder);
+        return builder;
+    }
+
+    public SortBuilder sort() {
+        SortBuilder builder = new SortBuilder(this);
+        builders.add(builder);
+        return builder;
+    }
+
+    public SumBuilder sum() {
+        SumBuilder builder = new SumBuilder(this);
         builders.add(builder);
         return builder;
     }

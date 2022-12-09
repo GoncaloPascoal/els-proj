@@ -31,8 +31,9 @@ loadUnstructured {
     }
 }
 
-merge {
+join {
     tables t1 t2 t3
+    type merge
 }
 
 sort {
@@ -50,6 +51,11 @@ sum {
     source t1
     target t1_c
     excludeColumns dir
+}
+
+join {
+    tables t1 t1_c
+    type concatenate
 }
 
 save {

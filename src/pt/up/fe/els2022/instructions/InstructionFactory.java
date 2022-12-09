@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import pt.up.fe.els2022.instructions.text.TextInstruction;
 import pt.up.fe.els2022.instructions.text.TextInstructionFactory;
+import pt.up.fe.els2022.model.JoinType;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.utils.CollectionUtils;
 import pt.up.fe.specs.util.SpecsCollections;
@@ -182,48 +183,29 @@ public class InstructionFactory {
                     throw new IllegalArgumentException("Incorrect argument types for rename instruction: " + ex.getMessage());
                 }
             }
-            case "concatenate": { // TODO: add parent instruction for concatenate and merge instructions
-                Object tablesObj = args.get("tables");
-                Object targetObj = args.get("target");
-
-                if (tablesObj == null) {
-                    throw new IllegalArgumentException("Missing required arguments for concatenate instruction.");
-                }
-
-                if (!(tablesObj instanceof List<?> && (targetObj == null || targetObj instanceof String))) {
-                    throw new IllegalArgumentException("Incorrect argument types for concatenate instruction.");
-                }
-
-                try {
-                    List<String> tables = SpecsCollections.cast((List<?>) tablesObj, String.class);
-                    String target = (String) targetObj;
-
-                    return new ConcatenateInstruction(tables, target);
-                }
-                catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for concatenate instruction: " + ex.getMessage());
-                }
-            }
             case "merge": {
                 Object tablesObj = args.get("tables");
+                Object typeObj = args.get("type");
                 Object targetObj = args.get("target");
 
-                if (tablesObj == null) {
-                    throw new IllegalArgumentException("Missing required arguments for merge instruction.");
+                if (tablesObj == null || typeObj == null) {
+                    throw new IllegalArgumentException("Missing required arguments for join instruction.");
                 }
 
-                if (!(tablesObj instanceof List<?> && (targetObj == null || targetObj instanceof String))) {
-                    throw new IllegalArgumentException("Incorrect argument types for merge instruction.");
+                if (!(tablesObj instanceof List<?> && typeObj instanceof String &&
+                        (targetObj == null || targetObj instanceof String))) {
+                    throw new IllegalArgumentException("Incorrect argument types for join instruction.");
                 }
 
                 try {
                     List<String> tables = SpecsCollections.cast((List<?>) tablesObj, String.class);
+                    JoinType joinType = JoinType.fromId((String) typeObj);
                     String target = (String) targetObj;
 
-                    return new MergeInstruction(tables, target);
+                    return new JoinInstruction(tables, joinType, target);
                 }
                 catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("Incorrect argument types for merge instruction: " + ex.getMessage());
+                    throw new IllegalArgumentException("Incorrect argument types for join instruction: " + ex.getMessage());
                 }
             }
             case "save": {

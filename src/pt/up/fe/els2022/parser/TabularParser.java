@@ -19,6 +19,7 @@ import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.internal.*;
 import pt.up.fe.els2022.internal.text.ColumnIntervalBuilder;
 import pt.up.fe.els2022.internal.text.RegexLineDelimiterBuilder;
+import pt.up.fe.els2022.model.JoinType;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Program;
 import pt.up.fe.els2022.tabular.TabularStandaloneSetup;
@@ -46,7 +47,7 @@ public class TabularParser {
 
         instructionParseMap.put(DslLoadStructured.class, this::loadStructured);
         instructionParseMap.put(DslLoadUnstructured.class, this::loadUnstructured);
-        instructionParseMap.put(DslMerge.class, this::merge);
+        instructionParseMap.put(DslJoin.class, this::join);
         instructionParseMap.put(DslRename.class, this::rename);
         instructionParseMap.put(DslSort.class, this::sort);
         instructionParseMap.put(DslAverage.class, this::average);
@@ -173,30 +174,21 @@ public class TabularParser {
         return builder.create();
     }
 
-    private static final Map<String, BiConsumer<MergeBuilder, DslMergeParam>> mergeParamMap = Map.ofEntries(
+    private static final Map<String, BiConsumer<JoinBuilder, DslJoinParam>> joinParamMap = Map.ofEntries(
         Map.entry("tables", (b, p) -> b.withTables(p.getTables())),
+        Map.entry("type", (b, p) -> b.withType(JoinType.fromId(p.getType()))),
         Map.entry("target", (b, p) -> b.withTarget(p.getTarget()))
     );
 
-    private Instruction merge(DslMerge merge) {
-        MergeBuilder builder = new MergeBuilder(null);
+    private Instruction join(DslJoin join) {
+        JoinBuilder builder = new JoinBuilder(null);
 
-        for (DslMergeParam param : merge.getParams()) {
-            mergeParamMap.get(param.getName()).accept(builder, param);
+        for (DslJoinParam param : join.getParams()) {
+            joinParamMap.get(param.getName()).accept(builder, param);
         }
 
         return builder.create();
     }
-
-    // private Instruction concat(DslConcat concat) {
-    //     ConcatenateBuilder builder = new ConcatenateBuilder(null);
-
-    //     for (DslJoinParam param : concat.getParams()) {
-    //         mergeParamMap.get(param.getName()).accept(builder, param);
-    //     }
-
-    //     return builder.create();
-    // }
 
     private Map<String, BiConsumer<RenameBuilder, DslRenameParam>> renameParamMap = Map.ofEntries(
         Map.entry("source", (b, p) -> b.withSource(p.getSource())),

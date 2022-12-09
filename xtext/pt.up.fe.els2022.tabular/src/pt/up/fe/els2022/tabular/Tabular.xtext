@@ -9,7 +9,7 @@ DslModel:
 ;
 
 DslInstruction:
-	DslLoad | DslMerge | DslRename | DslSave | DslFunction | DslSort
+	DslLoad | DslJoin | DslRename | DslSave | DslFunction | DslSort
 ;
 
 DslInterval:
@@ -117,23 +117,14 @@ DslSaveParam:
 /* ------- JOIN ------- */
 
 DslJoin:
-	DslMerge | DslConcat
-;
-
-DslMerge:
-	{DslMerge} 'merge' '{'
-		(params+=DslMergeParam)*
+	{DslJoin} 'join' '{'
+		(params+=DslJoinParam)*
 	'}'
 ;
 
-DslConcat:
-	{DslConcat} 'concat' '{'
-		(params+=DslMergeParam)*
-	'}'
-;
-
-DslMergeParam:
+DslJoinParam:
 	(name='tables' tables+=ID (tables+=ID)+) | // At least two tables must be specified
+	(name='type' type=JOIN_TYPE) |
 	(name='target' target=ID)
 ;
 
@@ -196,5 +187,6 @@ DslSortParam:
 ;
 
 terminal METADATA_TYPE: ('fileName' | 'filePath' | 'absoluteFilePath' | 'directoryName' | 'directoryPath');
+terminal JOIN_TYPE: ('merge' | 'concatenate');
 terminal BOOL returns ecore::EBoolean: ('true' | 'false');
 

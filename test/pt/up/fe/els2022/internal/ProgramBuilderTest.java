@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import pt.up.fe.els2022.adapters.Interval;
+import pt.up.fe.els2022.model.JoinType;
 import pt.up.fe.els2022.model.MetadataType;
 import pt.up.fe.els2022.model.Program;
 import pt.up.fe.specs.util.SpecsIo;
@@ -37,8 +38,9 @@ public class ProgramBuilderTest {
                     .addColumnInterval("HighestName", new Interval(55))
                     .close()
                 .close()
-            .merge()
+            .join()
                 .withTables("t1", "t2", "t3")
+                .withType(JoinType.MERGE)
                 .close()
             .save()
                 .withSource("t1")
