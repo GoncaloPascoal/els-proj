@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.map.ListOrderedMap;
+
 public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionBuilder {
     protected String target;
     protected List<String> files;
@@ -14,6 +16,7 @@ public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionB
 
     public LoadBuilder(ProgramBuilder parent) {
         super(parent);
+        this.metadataColumns = new ListOrderedMap<>();
     }
 
     public T withTarget(String target) {
@@ -28,6 +31,11 @@ public abstract class LoadBuilder<T extends LoadBuilder<T>> extends InstructionB
 
     public T withFiles(String... files) {
         this.files = Arrays.asList(files);
+        return thisSubclass();
+    }
+
+    public T addMetadataColumn(String column, MetadataType type) {
+        this.metadataColumns.put(column, type); 
         return thisSubclass();
     }
 

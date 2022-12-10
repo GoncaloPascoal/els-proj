@@ -1,0 +1,39 @@
+
+loadStructured {
+    target t1
+    files 'test/res/checkpoint2/data/vitis-report.xml'
+    paths '//AreaEstimates/Resources'
+    metadataColumns {
+        Folder -> directoryPath
+    }
+}
+
+loadStructured {
+    target t2
+    files 'test/res/checkpoint2/data/decision_tree.json'
+    paths '/' '/params'
+}
+
+loadUnstructured {
+    target t3
+    files 'test/res/checkpoint2/data/gprof.txt'
+    textInstructions {
+        columnInterval {
+            lines 6
+            columnIntervals {
+                HighestPercentage -> 1-7
+                HighestName -> 55
+            }
+        }
+    }
+}
+
+join {
+    tables t1 t2 t3
+    type merge
+}
+
+save {
+    source t1
+    file 'out/base.csv'
+}

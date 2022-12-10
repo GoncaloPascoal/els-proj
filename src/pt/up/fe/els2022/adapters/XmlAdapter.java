@@ -86,7 +86,7 @@ public class XmlAdapter extends StructuredAdapter {
                                 String name = child.getNodeName();
     
                                 if (child.getFirstChild().getNodeType() == Node.TEXT_NODE &&
-                                        name == column) {
+                                        name.equals(column)) {
                                     rows.putIfAbsent(name, new ArrayList<>());
                                     rows.get(name).add(child.getTextContent());
                                 }

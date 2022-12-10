@@ -20,8 +20,9 @@
           columnIntervals:
             HighestPercentage: [1, 7]
             HighestName: 55
-- merge:
+- join:
     tables: [t1, t2, t3]
+    type: merge
 - save:
     source: t1
     file: out/base.csv

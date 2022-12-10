@@ -85,10 +85,8 @@ public class TabularParser {
     private static final Map<String, BiConsumer<LoadBuilder<?>, DslLoadParam>> loadParamMap = Map.ofEntries(
         Map.entry("target", (b, p) -> b.withTarget(p.getTarget())),
         Map.entry("files", (b, p) -> b.withFiles(p.getFiles())),
-        Map.entry("metadataColumns", (b, p) -> b.withMetadataColumns(
-            p.getMetadataColumns().stream().collect(
-                Collectors.toMap(DslLoadMapping::getColumn, e -> MetadataType.fromId(e.getType()))
-            )
+        Map.entry("metadataColumns", (b, p) -> p.getMetadataColumns().forEach(
+            e -> b.addMetadataColumn(e.getColumn(), MetadataType.fromId(e.getType()))
         )),
         Map.entry("columnSuffix", (b, p) -> b.withColumnSuffix(p.getColumnSuffix()))
     );
@@ -131,10 +129,9 @@ public class TabularParser {
         Map.entry("lines", (b, p) -> b.withLines(p.getLines()
             .stream().map(TabularParser::parseInterval).collect(Collectors.toList()))
         ),
-        Map.entry("columnIntervals", (b, p) -> b.withColumnIntervals(p.getColumnIntervals()
-            .stream().collect(
-                Collectors.toMap(DslColumnIntervalMapping::getColumn, e -> parseInterval(e.getInterval()))
-            ))),
+        Map.entry("columnIntervals", (b, p) -> p.getColumnIntervals().forEach(
+            e -> b.addColumnInterval(e.getColumn(), parseInterval(e.getInterval()))
+        )),
         Map.entry("stripWhitespace", (b, p) -> b.withStripWhitespace(p.isStripWhitespace())),
         Map.entry("columnarFormat", (b, p) -> b.withColumnarFormat(p.getColumnarFormat()))
     );

@@ -8,7 +8,7 @@ import pt.up.fe.specs.util.SpecsIo;
 public class Checkpoint3Test {
     @Test
     public void baseUseCase() {
-        Main.main(new String[]{"test/res/checkpoint3/base.yaml"});
+        Main.main(new String[]{"test/res/checkpoint3/base.tb"});
         assertEquals(
             SpecsIo.getResource("checkpoint3/expected.csv"),
             SpecsIo.read("out/base.csv")
