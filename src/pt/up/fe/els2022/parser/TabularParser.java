@@ -2,8 +2,6 @@ package pt.up.fe.els2022.parser;
 
 import java.io.File;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -15,7 +13,6 @@ import org.eclipse.xtext.parser.IParser;
 import com.google.inject.Inject;
 
 import pt.up.fe.els2022.adapters.Interval;
-import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.internal.*;
 import pt.up.fe.els2022.internal.text.ColumnIntervalBuilder;
 import pt.up.fe.els2022.internal.text.RegexLineDelimiterBuilder;
@@ -25,7 +22,6 @@ import pt.up.fe.els2022.model.Program;
 import pt.up.fe.els2022.tabular.TabularStandaloneSetup;
 import pt.up.fe.els2022.tabular.tabular.*;
 import pt.up.fe.specs.util.SpecsIo;
-import pt.up.fe.specs.util.classmap.FunctionClassMap;
 import pt.up.fe.specs.util.classmap.BiConsumerClassMap;
 
 public class TabularParser {
@@ -43,7 +39,8 @@ public class TabularParser {
 
     public Program parse(String code) {
         IParseResult result = parser.parse(new StringReader(code));
-        FunctionClassMap<DslInstruction, Instruction> instructionParseMap = new FunctionClassMap<>();
+        ProgramBuilder builder = new ProgramBuilder();
+        BiConsumerClassMap<DslInstruction, ProgramBuilder> instructionParseMap = new BiConsumerClassMap<>();
 
         instructionParseMap.put(DslLoadStructured.class, this::loadStructured);
         instructionParseMap.put(DslLoadUnstructured.class, this::loadUnstructured);
@@ -67,14 +64,13 @@ public class TabularParser {
             throw new IllegalArgumentException(errBuilder.toString());
         }
 
-        var model = (DslModel) result.getRootASTElement();
+        var ast = (DslModel) result.getRootASTElement();
 
-        List<Instruction> instructions = new ArrayList<>();
-        for (DslInstruction dslInstruction : model.getInstructions()) {
-            instructions.add(instructionParseMap.apply(dslInstruction));
+        for (DslInstruction dslInstruction : ast.getInstructions()) {
+            instructionParseMap.accept(dslInstruction, builder);
         }
 
-        return new Program(instructions);
+        return builder.create();
     }
 
     private static Interval parseInterval(DslInterval dslInterval) {
@@ -96,8 +92,8 @@ public class TabularParser {
         Map.entry("columns", (b, p) -> b.withColumns(p.getColumns()))
     );
 
-    private Instruction loadStructured(DslLoadStructured loadStructured) {
-        LoadStructuredBuilder builder = new LoadStructuredBuilder(null);
+    private void loadStructured(DslLoadStructured loadStructured, ProgramBuilder parent) {
+        LoadStructuredBuilder builder = parent.loadStructured();
 
         BiConsumerClassMap<EObject, LoadStructuredBuilder> paramMap = new BiConsumerClassMap<>();
         paramMap.put(DslLoadParam.class, (p, b) -> loadParamMap.get(p.getName()).accept(b, p));
@@ -106,8 +102,6 @@ public class TabularParser {
         for (EObject param : loadStructured.getParams()) {
             paramMap.accept(param, builder);
         }
-
-        return builder.create();
     }
 
     private final Map<String, BiConsumer<LoadUnstructuredBuilder, DslLoadUnstructuredParam>> loadUnstructuredParamMap = Map.ofEntries(
@@ -157,8 +151,8 @@ public class TabularParser {
         }
     }
 
-    private Instruction loadUnstructured(DslLoadUnstructured loadUnstructured) {
-        LoadUnstructuredBuilder builder = new LoadUnstructuredBuilder(null);
+    private void loadUnstructured(DslLoadUnstructured loadUnstructured, ProgramBuilder parent) {
+        LoadUnstructuredBuilder builder = parent.loadUnstructured();
 
         BiConsumerClassMap<EObject, LoadUnstructuredBuilder> paramMap = new BiConsumerClassMap<>();
         paramMap.put(DslLoadParam.class, (p, b) -> loadParamMap.get(p.getName()).accept(b, p));
@@ -167,8 +161,6 @@ public class TabularParser {
         for (EObject param : loadUnstructured.getParams()) {
             paramMap.accept(param, builder);
         }
-
-        return builder.create();
     }
 
     private static final Map<String, BiConsumer<JoinBuilder, DslJoinParam>> joinParamMap = Map.ofEntries(
@@ -177,14 +169,12 @@ public class TabularParser {
         Map.entry("target", (b, p) -> b.withTarget(p.getTarget()))
     );
 
-    private Instruction join(DslJoin join) {
-        JoinBuilder builder = new JoinBuilder(null);
+    private void join(DslJoin join, ProgramBuilder parent) {
+        JoinBuilder builder = parent.join();
 
         for (DslJoinParam param : join.getParams()) {
             joinParamMap.get(param.getName()).accept(builder, param);
         }
-
-        return builder.create();
     }
 
     private Map<String, BiConsumer<RenameBuilder, DslRenameParam>> renameParamMap = Map.ofEntries(
@@ -195,14 +185,12 @@ public class TabularParser {
             )))
     );
 
-    private Instruction rename(DslRename rename) {
-        RenameBuilder builder = new RenameBuilder(null);
+    private void rename(DslRename rename, ProgramBuilder parent) {
+        RenameBuilder builder = parent.rename();
 
         for (DslRenameParam param : rename.getParams()) {
             renameParamMap.get(param.getName()).accept(builder, param);
         }
-
-        return builder.create();
     }
 
     private Map<String, BiConsumer<SortBuilder, DslSortParam>> sortParamMap = Map.ofEntries(
@@ -211,14 +199,12 @@ public class TabularParser {
         Map.entry("descending", (b, p) -> b.withDescending(p.isDescending()))
     );
 
-    private Instruction sort(DslSort sort) {
-        SortBuilder builder = new SortBuilder(null);
+    private void sort(DslSort sort, ProgramBuilder parent) {
+        SortBuilder builder = parent.sort();
 
         for (DslSortParam param : sort.getParams()) {
             sortParamMap.get(param.getName()).accept(builder, param);
         }
-
-        return builder.create();
     }
 
     private Map<String, BiConsumer<FunctionBuilder<?>, DslFunctionParam>> functionParamMap = Map.ofEntries(
@@ -228,24 +214,20 @@ public class TabularParser {
         Map.entry("excludeColumns", (b, p) -> b.withExcludeColumns(p.getExcludeColumns()))
     );
 
-    private Instruction average(DslAverage average) {
-        AverageBuilder builder = new AverageBuilder(null);
+    private void average(DslAverage average, ProgramBuilder parent) {
+        AverageBuilder builder = parent.average();
 
         for (DslFunctionParam param : average.getParams()) {
             functionParamMap.get(param.getName()).accept(builder, param);
         }
-
-        return builder.create();
     }
 
-    private Instruction sum(DslSum sum) {
-        SumBuilder builder = new SumBuilder(null);
+    private void sum(DslSum sum, ProgramBuilder parent) {
+        SumBuilder builder = parent.sum();
 
         for (DslFunctionParam param : sum.getParams()) {
             functionParamMap.get(param.getName()).accept(builder, param);
         }
-
-        return builder.create();
     }
 
     private Map<String, BiConsumer<SaveBuilder, DslSaveParam>> saveParamMap = Map.ofEntries(
@@ -254,13 +236,11 @@ public class TabularParser {
         Map.entry("columns", (b, p) -> b.withColumns(p.getColumns()))
     );
 
-    private Instruction save(DslSave save) {
-        SaveBuilder builder = new SaveBuilder(null);
+    private void save(DslSave save, ProgramBuilder parent) {
+        SaveBuilder builder = parent.save();
 
         for (DslSaveParam param : save.getParams()) {
             saveParamMap.get(param.getName()).accept(builder, param);
         }
-
-        return builder.create();
     }
 }
