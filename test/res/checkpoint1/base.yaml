@@ -7,7 +7,7 @@
     metadataColumns:
       File: fileName
 - sort:
-    target: t
+    source: t
     column: File
 - rename:
     source: t

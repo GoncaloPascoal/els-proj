@@ -9,12 +9,12 @@ import pt.up.fe.els2022.model.ProgramState;
 import pt.up.fe.els2022.model.Table;
 
 public class SortInstruction implements Instruction {
-    private final String target;
+    private final String source;
     private final String colName;
     private final boolean descending;
 
-    public SortInstruction(String target, String column, Boolean descending) {
-        this.target = target;
+    public SortInstruction(String source, String column, Boolean descending) {
+        this.source = source;
         this.colName = column;
 
         if (descending == null) {
@@ -24,9 +24,9 @@ public class SortInstruction implements Instruction {
     }
 
     public void execute(ProgramState state) {
-        Table table = state.getTable(target);
+        Table table = state.getTable(source);
         if (table == null) {
-            throw new IllegalArgumentException("Table " + target + " does not exist.");
+            throw new IllegalArgumentException("Table " + source + " does not exist.");
         }
 
         List<String> column = table.getColumn(colName);

@@ -132,18 +132,18 @@ public class InstructionFactory {
             }
             case "loadUnstructured": {
                 LoadParameters loadParameters = parseLoadParameters(args);
-                Object instructionsObj = args.get("instructions");
+                Object textInstructionsObj = args.get("textInstructions");
 
-                if (instructionsObj == null) {
+                if (textInstructionsObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for loadUnstructured instruction.");
                 }
 
-                if (!(instructionsObj instanceof List<?>)) {
+                if (!(textInstructionsObj instanceof List<?>)) {
                     throw new IllegalArgumentException("Incorrect argument types for loadUnstructured instruction.");
                 }
 
                 try {
-                    List<Map> genericMap = SpecsCollections.cast((List<?>) instructionsObj, Map.class);
+                    List<Map> genericMap = SpecsCollections.cast((List<?>) textInstructionsObj, Map.class);
                     List<TextInstruction> instructions = genericMap.stream().map(i -> {
                         Map<String, Map> m = CollectionUtils.castMap(i, String.class, Map.class);
                         var raw = m.entrySet().stream().findFirst().get();
@@ -233,24 +233,24 @@ public class InstructionFactory {
                 }
             }
             case "sort": {
-                Object targetObj = args.get("target");
+                Object sourceObj = args.get("source");
                 Object columnObj = args.get("column");
                 Object descendingObj = args.get("descending");
 
-                if (targetObj == null || columnObj == null) {
+                if (sourceObj == null || columnObj == null) {
                     throw new IllegalArgumentException("Missing required arguments for sort instruction.");
                 }
 
-                if (!(targetObj instanceof String && columnObj instanceof String && (descendingObj == null || descendingObj instanceof Boolean))) {
+                if (!(sourceObj instanceof String && columnObj instanceof String && (descendingObj == null || descendingObj instanceof Boolean))) {
                     throw new IllegalArgumentException("Incorrect argument types for sort instruction.");
                 }
 
                 try {
-                    String target = (String) targetObj;
+                    String source = (String) sourceObj;
                     String column = (String) columnObj;
                     Boolean descending = (Boolean) descendingObj;
 
-                    return new SortInstruction(target, column, descending);
+                    return new SortInstruction(source, column, descending);
                 }
                 catch (RuntimeException ex) {
                     throw new IllegalArgumentException("Incorrect argument types for sort instruction: " + ex.getMessage());

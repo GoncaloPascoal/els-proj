@@ -10,7 +10,7 @@ loadStructured {
 }
 
 sort {
-    target t
+    source t
     column File
 }
 

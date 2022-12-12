@@ -206,7 +206,7 @@ public class TabularParser {
     }
 
     private Map<String, BiConsumer<SortBuilder, DslSortParam>> sortParamMap = Map.ofEntries(
-        Map.entry("target", (b, p) -> b.withTarget(p.getTarget())),
+        Map.entry("source", (b, p) -> b.withSource(p.getSource())),
         Map.entry("column", (b, p) -> b.withColumn(p.getColumn())),
         Map.entry("descending", (b, p) -> b.withDescending(p.isDescending()))
     );

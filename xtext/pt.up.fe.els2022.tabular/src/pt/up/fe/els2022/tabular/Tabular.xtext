@@ -181,7 +181,7 @@ DslSort:
 ;
 
 DslSortParam:
-	(name='target' target=ID) |
+	(name='source' source=ID) |
 	(name='column' column=(ID|STRING)) |
 	(name='descending' descending=BOOL)
 ;

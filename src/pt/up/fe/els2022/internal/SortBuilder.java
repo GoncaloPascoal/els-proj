@@ -4,7 +4,7 @@ import pt.up.fe.els2022.instructions.Instruction;
 import pt.up.fe.els2022.instructions.SortInstruction;
 
 public class SortBuilder extends InstructionBuilder {
-    private String target;
+    private String source;
     private String column;
     private Boolean descending;
 
@@ -12,8 +12,8 @@ public class SortBuilder extends InstructionBuilder {
         super(parent);
     }
 
-    public SortBuilder withTarget(String target) {
-        this.target = target;
+    public SortBuilder withSource(String source) {
+        this.source = source;
         return this;
     }
 
@@ -29,13 +29,13 @@ public class SortBuilder extends InstructionBuilder {
 
     @Override
     protected void validate() {
-        if (target == null || column == null) {
+        if (source == null || column == null) {
             throw new RuntimeException("Missing arguments for sort instruction.");
         }
     }
 
     @Override
     protected Instruction createUnsafe() {
-        return new SortInstruction(target, column, descending);
+        return new SortInstruction(source, column, descending);
     }
 }

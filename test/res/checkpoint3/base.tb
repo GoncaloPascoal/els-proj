@@ -37,7 +37,7 @@ join {
 }
 
 sort {
-    target t1
+    source t1
     column dir
 }
 

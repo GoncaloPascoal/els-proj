@@ -16,7 +16,7 @@
     target: t3
     files:
       - test/res/checkpoint3/data/[0-9]+/gprof.txt
-    instructions:
+    textInstructions:
       - columnInterval:
           lines: [[6, 8]]
           columnIntervals:
@@ -26,7 +26,7 @@
 - merge:
     tables: [t1, t2, t3]
 - sort:
-    target: t1
+    source: t1
     column: dir
 - average:
     source: t1
