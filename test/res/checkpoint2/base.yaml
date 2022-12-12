@@ -14,7 +14,7 @@
     target: t3
     files:
       - test/res/checkpoint2/data/gprof.txt
-    instructions:
+    textInstructions:
       - columnInterval:
           lines: [6]
           columnIntervals:
