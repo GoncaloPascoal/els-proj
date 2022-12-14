@@ -187,7 +187,7 @@ Extracts a table from a file or set of files with a tree-like structure. Inherit
 
 #### Load Unstructured Instruction - `loadUnstructured` (**NEW**)
 
-Extracts a table from a file or set of unstructuredfiles. Inherits the `load` instruction's parameters.
+Extracts a table from a file or set of unstructured files. Inherits the `load` instruction's parameters.
 
 - `instructions`: list of text instructions that specify how to extract the table.
   - **Possible Instructions:**
@@ -293,4 +293,207 @@ builder
 
 Program program = builder.create();
 program.execute();
+```
+
+---
+
+## Checkpoint 3
+
+In this section, we comprehensively describe the changes to our application since the second checkpoint.
+
+### Changes to the Semantic Model
+Since the second checkpoint, we have implemented a few new instructions and introduced new parameters for some existing instructions. These modifications are described in more detail below.
+
+#### Instructions
+- Implemented an abstract `function` instruction, which will perform a calculation for each column of a specified (`source`) table. The abstract method `applyToColumn(List<String> column)` details the exact calculation to perform.
+  - The results will be added as a new row to the `target` table (which can the `source` table or a different table entirely).
+  - The user can specify which columns (`columns` parameter) should be included in the calculation or which columns should be excluded (`excludeColumns` parameter)
+  - If a column is excluded or if the chosen operation cannot be performed on the values of that column, the result for that column will be `null`.
+  - There are currently two concrete implementations of this instruction: the `sum` and `average` instructions. These instructions will only produce a result for columns whose values are all numeric (verified when the instruction is executed). We chose not to implement an explicit type system for columns, as doing so would incur an additional overhead when extracting data or manipulating tables. Since the main purpose of our application is to extract and combine tabular data from multiple sources, we should ensure that these operations are as efficient as possible, even if this means that `function` instructions are less performant.
+- Implemented the `sort` instruction, which will sort the rows of a table according to a specified column.
+  - There is also a boolean parameter for specifying if rows should be sorted in ascending or descending order (default is ascending).
+- Replaced the `merge` instruction with a new `join` instruction, which, given a list of two or more tables, will join them according to the `JoinType` specified in the `type` parameter.
+  - Currently, we have implemented two possible join types: `merge` (column-wise join) and `concatenate` (row-wise join).
+- Added the `columnSuffix` parameter to the abstract `load` instruction, which allows the user to specify a suffix that will be appended to the name of every column that was extracted (metadata columns are not affected).
+- Split the `directory` metadata type into `directoryName` and `directoryPath` for clarity.
+- Use regular expressions instead of glob expressions to specify file paths in `load` instructions, allowing increased flexibility.
+- Update the names of a few parameters for consistency.
+
+#### Text Instructions
+- Added the `columnarFormat` parameter to the `columnInterval` instruction.
+  - When this parameter is not specified (`null`), the instruction behaves as previously described (each extracted line from the file will correspond to a row in the table).
+  - However, if a string value is given, all of the lines extracted from the file will be part of a single table row, with the `columnarFormat` string specifying how the columns corresponding to each file line should be named.
+  - Functions similarly to a C-style format string (certain character combinations are replaced by other values).
+    - `%n` is replaced by the column's default name
+    - `%a` is replaced by the (absolute) line number within the file (e.g. line 32, line 75)
+    - `%r` is replaced by the relative line number (1 for the first line extracted, 2 for the second...)
+  - For example, if we were extracting the values of a column named `runs` from lines `32-34` using the columnar format `%n - %a/%r` the resulting column names would be `runs - 32/1`, `runs - 33/2` and `runs - 34/3`.
+
+### External DSL
+
+The external DSL we implemented, named **Tabular**, has a similar structure to our YAML configuration files and our internal DSL. We continued to follow our main design principles of conciseness and expressibility and focused on minimizing excessive use of punctuation in the syntax, facilitating the expression of certain parameters and including validation within the grammar whenever possible in order to catch errors earlier in the program execution.
+
+#### XText Grammar
+
+Our XText grammar accepts a set of one or more instructions. The grammar rules for instructions generally follow the format below:
+
+```xtext
+DslFoo:
+  {DslFoo} 'foo' '{'
+    (params+=DslFooParams)*
+  '}'
+;
+
+DslFooParams:
+	(name='idParam' id=ID) |
+	(name='stringParam' string=STRING) |
+	(name='intsParam' (ints+=INT)+)
+;
+```
+
+This allows instruction parameters to be specified in any order. The `name` feature is important, as we use this in the parser to distinguish between parameters.
+
+We also included a few additional terminals for specifying boolean values and enum variants (`JoinType`, `MetadataType`), so that these can be validated during parsing.
+
+#### Parsing
+
+
+
+### DSL Documentation (Full)
+
+#### Load Instruction
+
+Extracts a table from a file. Cannot be used on its own. \
+Parameters:
+- target: identifier of the table to store the result of the file extraction
+- files: list of path to files or glob expressions
+- metadataColumns: TODO
+- columnSuffix: TODO
+
+#### Load Structured Instruction (`loadStructured`)
+
+Extracts a table from a file or set of files with a tree-like structure. Inherits the `load` instruction's parameters. \
+Specific Parameters:
+- paths:
+- columns:
+
+#### Load Unstructured Instruction (`loadUnstructured`)
+
+Extracts a table from a file or set of unstructured files. Inherits the `load` instruction's parameters. \
+Specific Parameters:
+- textInstructions
+
+#### Save Instruction (`save`)
+
+Saves table as a CSV file, optionally filtering and reordering the columns to save.
+Parameters:
+- source
+- path
+- columns
+
+#### Rename Instruction (`rename`)
+
+Renames a column or set of columns from a given table. \
+Parameters:
+- source
+- mapping
+
+#### Join Instruction (`join`)
+
+Merges two or more tables, storing the result in a specified table. \
+Parameters:
+- tables
+- target
+- type
+
+#### Function Instruction
+
+Cannot be used on its own. \
+Parameters:
+- source
+- columns
+- excludeColumns
+- target
+
+#### Average Instruction (`average`)
+
+Inherits the `function` instruction's parameters.
+
+#### Sum Instruction (`sum`)
+
+Inherits the `function` instruction's parameters.
+
+#### Sort Instruction (`sort`)
+
+Parameters:
+- source
+- colName
+- descending
+
+### Example DSL File (Checkpoint 3)
+
+```
+loadStructured {
+    target t1
+    files 'test/res/checkpoint3/data/[0-9]+/analysis.xml'
+    paths '//total//static'
+    metadataColumns {
+        dir -> directoryName
+    }
+    columnSuffix ' (Static)'
+}
+
+loadStructured {
+    target t2
+    files 'test/res/checkpoint3/data/[0-9]+/analysis.json'
+    paths '//total//dynamic'
+    columnSuffix ' (Dynamic)'
+}
+
+loadUnstructured {
+    target t3
+    files 'test/res/checkpoint3/data/[0-9]+/gprof.txt'
+    textInstructions {
+        columnInterval {
+            lines 6-8
+            columnIntervals {
+                name -> 55
+                '%' -> 1-7
+            }
+            columnarFormat '%n #%r'
+        }
+    }
+}
+
+join {
+    tables t1 t2 t3
+    type merge
+}
+
+sort {
+    source t1
+    column dir
+}
+
+average {
+    source t1
+    target t1_c
+    excludeColumns dir
+}
+
+sum {
+    source t1
+    target t1_c
+    excludeColumns dir
+}
+
+join {
+    tables t1 t1_c
+    type concatenate
+}
+
+save {
+    source t1
+    file 'out/base.csv'
+}
 ```
