@@ -1,8 +1,8 @@
-- load:
+- loadStructured:
     target: t
     files:
       - test/res/checkpoint1/data/vitis-report_[1-3].xml
-    paths: //Resources
+    paths: [//Resources]
     columns: [LUT, FF, DSP48E, BRAM_18K]
     metadataColumns:
       File: fileName

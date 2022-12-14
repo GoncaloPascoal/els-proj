@@ -183,7 +183,7 @@ public class InstructionFactory {
                     throw new IllegalArgumentException("Incorrect argument types for rename instruction: " + ex.getMessage());
                 }
             }
-            case "merge": {
+            case "join": {
                 Object tablesObj = args.get("tables");
                 Object typeObj = args.get("type");
                 Object targetObj = args.get("target");

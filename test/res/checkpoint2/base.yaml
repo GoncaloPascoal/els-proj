@@ -4,7 +4,7 @@
       - test/res/checkpoint2/data/vitis-report.xml
     paths: [//AreaEstimates/Resources]
     metadataColumns:
-      Folder: directory
+      Folder: directoryPath
 - loadStructured:
     target: t2
     files:

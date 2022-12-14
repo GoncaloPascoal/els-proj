@@ -23,8 +23,9 @@
             name: 55
             '%': [1, 7]
           columnarFormat: '%n #%r'
-- merge:
+- join:
     tables: [t1, t2, t3]
+    type: merge
 - sort:
     source: t1
     column: dir
@@ -36,8 +37,9 @@
     source: t1
     target: t1_c
     excludeColumns: [dir]
-- concatenate:
+- join:
     tables: [t1, t1_c]
+    type: concatenate
 - save:
     source: t1
     file: out/base.csv
