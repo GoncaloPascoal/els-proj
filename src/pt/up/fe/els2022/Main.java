@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import pt.up.fe.els2022.model.Program;
+import pt.up.fe.els2022.parser.ConfigParser;
 import pt.up.fe.els2022.parser.TabularParser;
 import pt.up.fe.els2022.utils.FileUtils;
 
