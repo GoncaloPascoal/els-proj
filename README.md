@@ -557,3 +557,13 @@ save {
     file 'out/base.csv'
 }
 ```
+
+---
+
+## Self Evaluation
+
+- **Project Grade:** 19
+- **Group Contribution**
+  - Clara Martins: 35%
+  - Daniel Monteiro: 30%
+  - Gonçalo Pascoal: 35%
